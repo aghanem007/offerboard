@@ -964,7 +964,28 @@ CREATE INDEX IF NOT EXISTS idx_follows_target ON public.follows(target_type, tar
 CREATE INDEX IF NOT EXISTS idx_warnings_user  ON public.warnings(user_id);
 
 -- ------------------------------------------------------------
--- 8. Seed: sections and categories
+-- 8. Grants
+--
+-- Privileges say which verbs a role may use at all; RLS decides
+-- which rows they apply to. Writes go only to the tables the app
+-- actually writes, always through RLS.
+-- ------------------------------------------------------------
+
+GRANT USAGE ON SCHEMA public TO anon, authenticated;
+
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO anon, authenticated;
+
+GRANT INSERT, UPDATE ON public.topics      TO authenticated;
+GRANT INSERT, UPDATE ON public.replies     TO authenticated;
+GRANT UPDATE         ON public.profiles    TO authenticated;
+GRANT INSERT         ON public.warnings    TO authenticated;
+GRANT INSERT         ON public.mod_actions TO authenticated;
+GRANT INSERT, DELETE ON public.follows     TO authenticated;
+
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO anon, authenticated;
+
+-- ------------------------------------------------------------
+-- 9. Seed: sections and categories
 -- ------------------------------------------------------------
 
 INSERT INTO public.sections (id, name, sort_order) VALUES

@@ -11,9 +11,8 @@
 (function () {
   'use strict';
 
-  // TODO(offerboard): replace with the new project URL + publishable key
-  var SUPABASE_URL = 'https://tppdhakosebdgfiwqzur.supabase.co';
-  var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwcGRoYWtvc2ViZGdmaXdxenVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk2NTU5OTUsImV4cCI6MjA4NTIzMTk5NX0.vHBdQqfO29K-WXxbUg3-eLloAUc1vVk5o9oGytRfAY8';
+  var SUPABASE_URL = 'https://dosdtqccclkignnqtjmq.supabase.co';
+  var SUPABASE_KEY = 'sb_publishable_Kg662jx4XY7yQ0-ahVrA_Q_CjFM4GX2';
 
   var _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   var _currentUser = null;
