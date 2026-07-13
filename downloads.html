@@ -1,0 +1,205 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pixel Forum | Downloads</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <div class="status-pill">Pixel-only • No injection • No overlays</div>
+      <div class="auth-links">
+        <button class="auth-trigger" type="button" onclick="toggleDropdown(event)">
+          Existing user? Sign In <span class="caret">▾</span>
+        </button>
+        <a href="signup.html" class="btn small">Sign Up</a>
+        <div class="auth-dropdown" id="authDropdown">
+          <h4>Sign In</h4>
+          <form onsubmit="return false;">
+            <label for="loginEmail">Email Address</label>
+            <input type="email" id="loginEmail" name="email" placeholder="you@email.com" required>
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" name="password" placeholder="Password" required>
+            <div class="remember-row">
+              <input type="checkbox" id="rememberMe" name="remember">
+              <label for="rememberMe" style="margin-bottom: 0;">Remember me</label>
+            </div>
+            <button type="submit" class="signin-btn">Sign In</button>
+            <a href="recovery.html" class="forgot-link">Forgot your password?</a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <header class="nav">
+    <div class="container nav-inner">
+      <div class="brand">
+        <a class="brand-link" href="index.html">
+          <div class="logo-tile">
+            <img src="assets/logo_no_bg_best.png" alt="Pixel logo" class="logo-img" />
+          </div>
+          <div>
+            <div class="brand-name">Pixel</div>
+            <div class="brand-sub">Forum</div>
+          </div>
+        </a>
+      </div>
+      <nav class="nav-links">
+        <a href="index.html">Browse</a>
+        <a href="downloads.html">Download</a>
+        <a href="store.html">Store</a>
+        <a href="guides.html">Guides</a>
+        <a href="support.html">Support</a>
+        <a href="store.html" class="accent">Upgrade to VIP</a>
+      </nav>
+      <div class="search">
+        <input type="search" placeholder="Search..." />
+        <button aria-label="Search">
+          <span>🔍</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+<main class="container downloads-wrap">
+    <section class="downloads-hero">
+      <div>
+        <p class="eyebrow">Member Downloads</p>
+        <h1>Pixel Downloads</h1>
+        <p class="sub">Download the latest Pixel build, plugin packs, and configuration templates.</p>
+      </div>
+      <a href="store.html" class="btn">Upgrade to Member</a>
+    </section>
+
+    <section class="downloads-card">
+      <div class="downloads-info">
+        <h2>Latest Build</h2>
+        <p>Member-only access. Your account role will unlock the download button.</p>
+        <ul>
+          <li>Full pipeline build (capture, detect, decide, act)</li>
+          <li>Plugin packs and template assets included</li>
+          <li>Safety gate updates and config validation</li>
+          <li>Release notes and checksums provided</li>
+        </ul>
+      </div>
+      <div class="downloads-actions">
+        <button class="btn full" type="button" id="downloadBtn" disabled>Sign in to Download</button>
+        <p class="muted" id="downloadNote">Not seeing access? Confirm your membership status.</p>
+      </div>
+    </section>
+
+    <section class="downloads-card">
+      <div class="downloads-info">
+        <h2>Older Versions</h2>
+        <p>Available to members for rollback and testing.</p>
+      </div>
+      <div class="downloads-actions">
+        <button class="btn full" type="button" id="olderBtn" disabled>Members Only</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span>Pixel Forum</span>
+      <div>
+        <a href="index.html">Home</a>
+        <a href="terms.html">Terms</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="refund.html">Refund Policy</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="data/forum-api.js"></script>
+  <script src="main.js"></script>
+  <script>
+    function toggleDropdown(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      var dropdown = document.getElementById('authDropdown');
+      dropdown.classList.toggle('open');
+    }
+    document.addEventListener('click', function(event) {
+      var dropdown = document.getElementById('authDropdown');
+      var trigger = document.querySelector('.auth-trigger');
+      if (dropdown && trigger && !dropdown.contains(event.target) && !trigger.contains(event.target)) {
+        dropdown.classList.remove('open');
+      }
+    });
+
+    // Enable download buttons based on role (VIP+ only) + load from DB
+    window.onAuthReady(async function() {
+      var downloadBtn = document.getElementById('downloadBtn');
+      var olderBtn = document.getElementById('olderBtn');
+      var downloadNote = document.getElementById('downloadNote');
+
+      // Fetch latest release from DB
+      var latest = await getLatestRelease();
+      var latestVersion = latest ? latest.version : '?.?.?';
+      var latestFilename = latest ? latest.filename : 'pixel-loader.exe';
+      var latestNotes = latest ? latest.release_notes : '';
+
+      if (window.hasRole && window.hasRole('vip')) {
+        // VIP or Admin — full access
+        if (downloadBtn) {
+          downloadBtn.disabled = false;
+          downloadBtn.textContent = 'Download v' + latestVersion;
+          downloadBtn.onclick = function() {
+            if (latest && latest.download_url) {
+              window.location.href = latest.download_url;
+            } else {
+              alert('Download Started!\n\nPixel Loader v' + latestVersion + '\nFile: ' + latestFilename + '\n\nFile hosting is not yet configured.');
+            }
+          };
+        }
+        if (olderBtn) {
+          olderBtn.disabled = false;
+          olderBtn.textContent = 'View Archive';
+          olderBtn.onclick = async function() {
+            var releases = await getAllReleases();
+            if (!releases || releases.length === 0) {
+              alert('No archived versions found.');
+              return;
+            }
+            var lines = releases.map(function(r) {
+              var d = new Date(r.created_at);
+              var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+              return '  v' + r.version + ' - ' + months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear() + (r.release_notes ? '\n    ' + r.release_notes : '');
+            });
+            alert('Version Archive\n\n' + lines.join('\n\n'));
+          };
+        }
+        if (downloadNote) {
+          downloadNote.textContent = 'You have VIP access to all downloads.';
+        }
+      } else if (window.isLoggedIn && window.isLoggedIn()) {
+        // Member — upgrade prompt
+        if (downloadBtn) {
+          downloadBtn.disabled = false;
+          downloadBtn.textContent = 'Upgrade to VIP';
+          downloadBtn.onclick = function() {
+            window.location.href = 'store.html';
+          };
+        }
+        if (olderBtn) {
+          olderBtn.disabled = true;
+          olderBtn.textContent = 'VIP Only';
+        }
+        if (downloadNote) {
+          downloadNote.textContent = 'VIP membership required for downloads. Upgrade to unlock access.';
+        }
+      }
+      // Guest: buttons stay disabled with default text
+    });
+  </script>
+</body>
+</html>

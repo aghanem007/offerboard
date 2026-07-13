@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pixel Forum | Sign Up</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="auth-body">
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <div class="status-pill">Pixel-only - No injection - No overlays</div>
+      <div class="auth-links">
+        <a href="index.html" class="link">Back to Forum</a>
+      </div>
+    </div>
+  </div>
+
+  <main class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-brand">
+        <img src="assets/logo_no_bg_best.png" alt="Pixel logo" />
+        <div>
+          <h1>Create Your Account</h1>
+          <p>Member access unlocks private downloads and support.</p>
+        </div>
+      </div>
+
+      <form class="auth-form" id="signupForm">
+        <label for="displayName">
+          <span>Display Name</span>
+          <input type="text" id="displayName" placeholder="Your name" required minlength="3" />
+        </label>
+        <label for="email">
+          <span>Email Address</span>
+          <input type="email" id="email" placeholder="you@email.com" required />
+        </label>
+        <label for="password">
+          <span>Password</span>
+          <input type="password" id="password" placeholder="Minimum 8 characters" required minlength="8" />
+        </label>
+        <label for="confirmPassword">
+          <span>Confirm Password</span>
+          <input type="password" id="confirmPassword" placeholder="Repeat your password" required />
+        </label>
+        <div id="passwordError" class="form-error" style="display: none;">Passwords do not match</div>
+        <label class="checkbox">
+          <input type="checkbox" id="newsletter" />
+          <span>Send me news and updates</span>
+        </label>
+        <label class="checkbox">
+          <input type="checkbox" id="agreeTerms" required />
+          <span>I agree to the <a href="terms.html" class="link">Terms of Use</a> and <a href="privacy.html" class="link">Privacy Policy</a></span>
+        </label>
+        <button type="submit" class="btn full">Create My Account</button>
+      </form>
+
+      <div id="signupMessage" class="auth-message" style="display: none;"></div>
+
+      <div class="auth-note">
+        <span>Existing user?</span>
+        <a href="index.html" class="link">Sign in from the forum</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script>
+    const form = document.getElementById('signupForm');
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirmPassword');
+    const passwordError = document.getElementById('passwordError');
+    const signupMessage = document.getElementById('signupMessage');
+
+    // Real-time password match validation
+    confirmPassword.addEventListener('input', () => {
+      if (password.value !== confirmPassword.value) {
+        passwordError.style.display = 'block';
+        confirmPassword.setCustomValidity('Passwords do not match');
+      } else {
+        passwordError.style.display = 'none';
+        confirmPassword.setCustomValidity('');
+      }
+    });
+
+    password.addEventListener('input', () => {
+      if (confirmPassword.value && password.value !== confirmPassword.value) {
+        passwordError.style.display = 'block';
+        confirmPassword.setCustomValidity('Passwords do not match');
+      } else {
+        passwordError.style.display = 'none';
+        confirmPassword.setCustomValidity('');
+      }
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Final validation
+      if (password.value !== confirmPassword.value) {
+        passwordError.style.display = 'block';
+        return;
+      }
+
+      const submitBtn = form.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Creating account...';
+
+      const displayName = document.getElementById('displayName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const pass = password.value;
+
+      try {
+        const { data, error } = await window._supabase.auth.signUp({
+          email: email,
+          password: pass,
+          options: {
+            data: {
+              display_name: displayName
+            }
+          }
+        });
+
+        if (error) {
+          alert('Sign up failed: ' + error.message);
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Create My Account';
+          return;
+        }
+
+        form.style.display = 'none';
+        signupMessage.style.display = 'block';
+        signupMessage.className = 'auth-message success';
+        signupMessage.innerHTML = '<p>Account created successfully!</p><p>Please check your email to verify your account before signing in.</p><br><a href="index.html" class="btn">Return to Forum</a>';
+      } catch (err) {
+        alert('Error: ' + err.message);
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Create My Account';
+      }
+    });
+  </script>
+</body>
+</html>

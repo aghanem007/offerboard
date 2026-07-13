@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pixel Forum</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <div class="status-pill">Pixel-only - No injection - No overlays</div>
+      <div class="auth-links">
+        <button class="auth-trigger" type="button" onclick="toggleDropdown(event)">
+          Existing user? Sign In <span class="caret">&#9662;</span>
+        </button>
+        <a href="signup.html" class="btn small">Sign Up</a>
+        <div class="auth-dropdown" id="authDropdown">
+          <h4>Sign In</h4>
+          <form onsubmit="return false;">
+            <label for="loginEmail">Email Address</label>
+            <input type="email" id="loginEmail" name="email" placeholder="you@email.com" required>
+
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" name="password" placeholder="Password" required>
+
+            <div class="remember-row">
+              <input type="checkbox" id="rememberMe" name="remember">
+              <label for="rememberMe" style="margin-bottom: 0;">Remember me</label>
+            </div>
+
+            <button type="submit" class="signin-btn">Sign In</button>
+            <a href="recovery.html" class="forgot-link">Forgot your password?</a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <header class="nav">
+    <div class="container nav-inner">
+      <div class="brand">
+        <a class="brand-link" href="index.html">
+          <div class="logo-tile">
+            <img src="assets/logo_no_bg_best.png" alt="Pixel logo" class="logo-img">
+          </div>
+          <div>
+            <div class="brand-name">Pixel</div>
+            <div class="brand-sub">Forum</div>
+          </div>
+        </a>
+      </div>
+      <nav class="nav-links">
+        <a href="index.html">Browse</a>
+        <a href="downloads.html">Download</a>
+        <a href="store.html">Store</a>
+        <a href="guides.html">Guides</a>
+        <a href="support.html">Support</a>
+        <a href="store.html" class="accent">Upgrade to VIP</a>
+      </nav>
+      <div class="search">
+        <input type="search" placeholder="Search...">
+        <button aria-label="Search"><span>&#128269;</span></button>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container hero-inner">
+      <div class="hero-copy">
+        <p class="eyebrow">Pixel Automation Framework</p>
+        <h1>Pixel-Only Automation, Built on Safety</h1>
+        <p class="sub">A full pipeline from screen capture to controlled input. No hooks, no injection, no overlays. Capture, detect, decide, act — with a 12-layer safety model at every step.</p>
+        <div class="hero-actions">
+          <a href="store.html" class="btn">Upgrade Now</a>
+          <a href="guides.html" class="link">View Getting Started</a>
+        </div>
+      </div>
+      <div class="hero-panel">
+        <div class="hero-card">
+          <h3>Safety First</h3>
+          <ul>
+            <li>99%+ commit threshold</li>
+            <li>Multi-frame confirmation</li>
+            <li>Cooldown + hysteresis</li>
+            <li>Assist mode + rate limiting</li>
+            <li>Kill switch (F12 default)</li>
+          </ul>
+        </div>
+        <div class="hero-card">
+          <h3>How It Works</h3>
+          <ul>
+            <li>Screen capture + detection</li>
+            <li>OCR + state estimation</li>
+            <li>Policy engine + safety gates</li>
+            <li>Controlled input + telemetry</li>
+          </ul>
+          <a href="guides.html" class="link">Read the guides</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="alert">
+    <div class="container alert-inner">
+      <strong>Scam Alert:</strong>
+      <span>We do not sell access via Discord. Always verify staff through forum PMs.</span>
+    </div>
+  </section>
+
+  <section class="faq-strip">
+    <div class="container faq-inner">
+      <span class="faq-label">FREQUENTLY ASKED QUESTIONS</span>
+      <div class="ticker-wrapper">
+        <div class="ticker-content">
+          <span>New to Pixel? Create a <a href="guides.html#profiles">profile with the setup wizard</a> to get started</span>
+          <span class="ticker-dot">•</span>
+          <span>Detection issues? Re-calibrate your <a href="guides.html#calibration">ROI and anchors</a></span>
+          <span class="ticker-dot">•</span>
+          <span>Explore <a href="guides.html#plugins">plugin packs</a> to extend Pixel with community templates</span>
+          <span class="ticker-dot">•</span>
+          <span>Monitor live runs with the <a href="guides.html#runtime">runtime UI and diagnostics console</a></span>
+          <span class="ticker-dot">•</span>
+          <span>Need help? Visit the <a href="forum.html?id=client-support">Client Support</a> forum</span>
+          <span class="ticker-dot">•</span>
+          <span>Always verify staff through <a href="contact.html">forum PMs only</a></span>
+          <span class="ticker-dot">•</span>
+          <!-- Duplicate for seamless loop -->
+          <span>New to Pixel? Create a <a href="guides.html#profiles">profile with the setup wizard</a> to get started</span>
+          <span class="ticker-dot">•</span>
+          <span>Detection issues? Re-calibrate your <a href="guides.html#calibration">ROI and anchors</a></span>
+          <span class="ticker-dot">•</span>
+          <span>Explore <a href="guides.html#plugins">plugin packs</a> to extend Pixel with community templates</span>
+          <span class="ticker-dot">•</span>
+          <span>Monitor live runs with the <a href="guides.html#runtime">runtime UI and diagnostics console</a></span>
+          <span class="ticker-dot">•</span>
+          <span>Need help? Visit the <a href="forum.html?id=client-support">Client Support</a> forum</span>
+          <span class="ticker-dot">•</span>
+          <span>Always verify staff through <a href="contact.html">forum PMs only</a></span>
+          <span class="ticker-dot">•</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="container main-grid">
+    <div class="forum">
+      <div class="content-bar">
+        <div class="content-bar-left">
+          <a href="index.html">Home</a>
+        </div>
+        <div class="content-bar-right">
+          <a href="index.html">All Activity</a>
+          <a href="#" onclick="alert('Unread content tracking is not yet available.'); return false;">Unread Content</a>
+          <a href="#" onclick="alert('Mark site read is not yet available.'); return false;">Mark site read</a>
+        </div>
+      </div>
+
+      <div id="forumSections">
+        <p class="muted" style="padding: 20px;">Loading forums...</p>
+      </div>
+
+      <section class="online-section">
+        <div class="online-header">
+          <h3>Who's Online <span>0 Members, 0 Guests</span></h3>
+          <span class="muted">See full list</span>
+        </div>
+        <div class="online-body">
+          <div class="online-users">
+            <span class="muted">No users currently online</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="online-section">
+        <div class="online-header">
+          <h3>Previously Active</h3>
+          <span class="muted">See full list</span>
+        </div>
+        <div class="online-body">
+          <div class="online-users">
+            <span class="muted">No recent activity</span>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="sidebar">
+      <section class="side-card">
+        <div class="side-card-header"><h3>Announcements</h3></div>
+        <ul>
+          <li><a href="guides.html" class="arrow-link">Dispute Guide</a></li>
+          <li><a href="guides.html" class="arrow-link">Private Message Verification</a></li>
+          <li><a href="terms.html" class="arrow-link">Forum Rules</a></li>
+          <li><a href="contact.html" class="arrow-link">Staff Application Template</a></li>
+        </ul>
+      </section>
+
+      <section class="side-card">
+        <div class="side-card-header"><h3>Recent Topics</h3></div>
+        <div id="recentTopicsList"><p class="muted">Loading...</p></div>
+      </section>
+
+      <section class="side-card">
+        <div class="side-card-header"><h3>Forum Statistics</h3></div>
+        <div class="forum-stats-list" id="forumStatsList">
+          <div class="stat-row"><span class="stat-label">Topics</span><span class="stat-value" id="statTopicsHome">0</span></div>
+          <div class="stat-row"><span class="stat-label">Total Posts</span><span class="stat-value" id="statPostsHome">0</span></div>
+          <div class="stat-row"><span class="stat-label">Members</span><span class="stat-value" id="statMembersHome">0</span></div>
+        </div>
+      </section>
+
+      <section class="side-card">
+        <h3>Member Access</h3>
+        <ul>
+          <li>Private Downloads (members only)</li>
+          <li>Premium Support</li>
+          <li>Beta Releases</li>
+        </ul>
+        <a href="store.html" class="btn full">Upgrade Now</a>
+      </section>
+
+      <section class="side-card" id="contributorsCard">
+        <div class="side-card-header"><h3>Popular Contributors</h3></div>
+        <div class="tabs" id="contributorTabs">
+          <button class="active" data-period="week">Week</button>
+          <button data-period="month">Month</button>
+          <button data-period="year">Year</button>
+          <button data-period="all">All Time</button>
+        </div>
+        <div id="contributorsList"><p class="muted" style="padding: 10px 0;">Loading...</p></div>
+      </section>
+
+    </aside>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span>Pixel Forum</span>
+      <div>
+        <a href="index.html">Home</a>
+        <a href="terms.html">Terms</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="refund.html">Refund Policy</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="data/forum-api.js"></script>
+  <script src="main.js"></script>
+  <script>
+    // Dropdown toggle
+    function toggleDropdown(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      var dropdown = document.getElementById('authDropdown');
+      if (dropdown.classList.contains('open')) {
+        dropdown.classList.remove('open');
+      } else {
+        dropdown.classList.add('open');
+      }
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+      var dropdown = document.getElementById('authDropdown');
+      var trigger = document.querySelector('.auth-trigger');
+
+      if (dropdown && trigger && !dropdown.contains(event.target) && !trigger.contains(event.target)) {
+        dropdown.classList.remove('open');
+      }
+    });
+
+    // Contributor tab switching with data reload
+    document.querySelectorAll('#contributorTabs button').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        this.parentElement.querySelectorAll('button').forEach(function(b) {
+          b.classList.remove('active');
+        });
+        this.classList.add('active');
+        var period = this.getAttribute('data-period');
+        loadContributors(period);
+      });
+    });
+
+    // Other tabs (non-contributor)
+    document.querySelectorAll('.tabs:not(#contributorTabs) button').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        this.parentElement.querySelectorAll('button').forEach(function(b) {
+          b.classList.remove('active');
+        });
+        this.classList.add('active');
+      });
+    });
+
+    // Render contributors
+    function loadContributors(period) {
+      getTopContributors(period, 5).then(function(contributors) {
+        var el = document.getElementById('contributorsList');
+        if (!el) return;
+        if (!contributors || contributors.length === 0) {
+          el.innerHTML = '<p class="muted" style="padding: 10px 0;">No contributors yet</p>';
+          return;
+        }
+        var html = '';
+        contributors.forEach(function(c) {
+          html += '<div class="contributor-item">';
+          html += '<div class="avatar avatar-sm avatar-' + (c.avatar_color || 'blue') + '">' + (c.avatar_letter || '?') + '</div>';
+          html += '<span class="contributor-name">' + roleUsername(c.username, c.role) + '</span>';
+          html += '<span class="contributor-rep"><span class="dot"></span> ' + (c.post_total || 0) + ' posts</span>';
+          html += '</div>';
+        });
+        el.innerHTML = html;
+      });
+    }
+
+    // Render online users
+    function renderOnlineSection(users, containerSelector, headerSelector) {
+      var sections = document.querySelectorAll('.online-section');
+      var section = sections[containerSelector === 'online' ? 0 : 1];
+      if (!section) return;
+
+      var body = section.querySelector('.online-users');
+      var header = section.querySelector('.online-header h3');
+
+      if (!users || users.length === 0) {
+        body.innerHTML = '<span class="muted">' + (containerSelector === 'online' ? 'No users currently online' : 'No recent activity') + '</span>';
+        if (containerSelector === 'online' && header) {
+          header.innerHTML = 'Who\'s Online <span>0 Members, 0 Guests</span>';
+        }
+        return;
+      }
+
+      var names = [];
+      users.forEach(function(u) {
+        names.push(roleUsername(u.username, u.role));
+      });
+      body.innerHTML = names.join(', ');
+
+      if (containerSelector === 'online' && header) {
+        header.innerHTML = 'Who\'s Online <span>' + users.length + ' Member' + (users.length !== 1 ? 's' : '') + ', 0 Guests</span>';
+      }
+      if (containerSelector === 'previous' && header) {
+        header.innerHTML = 'Previously Active <span>' + users.length + ' Member' + (users.length !== 1 ? 's' : '') + '</span>';
+      }
+    }
+
+    // Render recent topics
+    function loadRecentTopics() {
+      getRecentTopics(5).then(function(topics) {
+        var el = document.getElementById('recentTopicsList');
+        if (!el) return;
+        if (!topics || topics.length === 0) {
+          el.innerHTML = '<p class="muted">No topics yet</p>';
+          return;
+        }
+        var html = '<ul style="list-style:none;display:grid;gap:8px;">';
+        topics.forEach(function(t) {
+          var title = t.title || '';
+          if (title.length > 35) title = title.substring(0, 35) + '...';
+          html += '<li><a href="topic.html?id=' + t.id + '" class="arrow-link" style="font-size:0.85rem;">' + title + '</a></li>';
+        });
+        html += '</ul>';
+        el.innerHTML = html;
+      });
+    }
+
+    // Render forum statistics
+    function loadForumStats() {
+      getForumStatistics().then(function(stats) {
+        var el1 = document.getElementById('statTopicsHome');
+        var el2 = document.getElementById('statPostsHome');
+        var el3 = document.getElementById('statMembersHome');
+        if (el1) el1.textContent = stats.topics;
+        if (el2) el2.textContent = stats.posts;
+        if (el3) el3.textContent = stats.members;
+      });
+    }
+
+    // Render search results
+    function renderSearchResults(query) {
+      var container = document.getElementById('forumSections');
+      if (!container) return;
+      container.innerHTML = '<p class="muted" style="padding:20px;">Searching for "' + query.replace(/</g, '&lt;') + '"...</p>';
+
+      searchForum(query).then(function(results) {
+        if (!results || results.length === 0) {
+          container.innerHTML = '<section class="forum-section"><header class="section-header"><h2>Search Results</h2></header>'
+            + '<div style="padding:40px 20px;text-align:center;"><p class="muted">No results found for "' + query.replace(/</g, '&lt;') + '"</p>'
+            + '<p class="muted" style="margin-top:8px;"><a href="index.html" style="color:var(--teal);">Back to forum</a></p></div></section>';
+          return;
+        }
+
+        var html = '<section class="forum-section"><header class="section-header"><h2>Search Results <span style="font-weight:400;font-size:0.85rem;opacity:0.8;">(' + results.length + ' found)</span></h2></header>';
+        html += '<div class="topic-list">';
+        results.forEach(function(r) {
+          var link = r.result_type === 'topic' ? 'topic.html?id=' + r.id : 'topic.html?id=' + r.topic_id;
+          var snippet = (r.snippet || '').replace(/<[^>]+>/g, '');
+          if (snippet.length > 120) snippet = snippet.substring(0, 120) + '...';
+          html += '<a href="' + link + '" class="topic-row">';
+          html += '<div class="topic-row-icon"><div class="avatar avatar-sm avatar-' + (r.author_color || 'blue') + '">' + (r.author_avatar || '?') + '</div></div>';
+          html += '<div class="topic-row-main">';
+          html += '<div class="topic-row-title"><h3>' + (r.title || 'Untitled') + '</h3>';
+          if (r.result_type === 'reply') html += ' <span class="badge badge-pinned">Reply</span>';
+          html += '</div>';
+          html += '<p class="search-snippet">' + snippet + '</p>';
+          html += '<div class="topic-row-meta"><span>by ' + roleUsername(r.author_name, r.author_role) + '</span><span>' + formatRelativeDate(r.created_at) + '</span></div>';
+          html += '</div></a>';
+        });
+        html += '</div></section>';
+        container.innerHTML = html;
+      });
+    }
+
+    // Dynamic forum sections from Supabase
+    window.onAuthReady(async function() {
+      // Check for search query first
+      var params = new URLSearchParams(window.location.search);
+      var searchQuery = params.get('search');
+      if (searchQuery) {
+        renderSearchResults(searchQuery);
+        // Hide hero + alert when showing search
+        var hero = document.querySelector('.hero');
+        var alert = document.querySelector('.alert');
+        if (hero) hero.style.display = 'none';
+        if (alert) alert.style.display = 'none';
+      } else {
+
+      var categories = await getCategoriesWithLatest();
+      if (!categories || categories.length === 0) {
+        document.getElementById('forumSections').innerHTML = '<p class="muted" style="padding:20px;">No forums available.</p>';
+        return;
+      }
+
+      // Group by section
+      var sections = {};
+      var sectionOrder = [];
+      categories.forEach(function(cat) {
+        var sid = cat.section_id;
+        if (!sections[sid]) {
+          sections[sid] = { name: cat.section_name, categories: [] };
+          sectionOrder.push(sid);
+        }
+        sections[sid].categories.push(cat);
+      });
+
+      var html = '';
+      sectionOrder.forEach(function(sid) {
+        var sec = sections[sid];
+        html += '<section class="forum-section">';
+        html += '<header class="section-header">';
+        html += '<h2>' + sec.name + '</h2>';
+        html += '<button class="collapse">&#9662;</button>';
+        html += '</header>';
+        html += '<div class="forum-list">';
+
+        sec.categories.forEach(function(cat) {
+          var topicCount = cat.topic_count || 0;
+          var latestHtml;
+          if (cat.latest_topic_id) {
+            var posterAvatar = cat.latest_poster_avatar || '?';
+            var posterColor = cat.latest_poster_color || 'blue';
+            var title = cat.latest_topic_title || '';
+            if (title.length > 30) title = title.substring(0, 30) + '...';
+            var dateStr = formatRelativeDate(cat.latest_activity_at);
+            latestHtml = '<div class="avatar avatar-sm avatar-' + posterColor + '">' + posterAvatar + '</div>'
+              + '<div class="forum-latest-text"><p>' + title + '</p><small>' + dateStr + '</small></div>';
+          } else {
+            latestHtml = '<div class="forum-latest-text"><p>No posts yet</p></div>';
+          }
+
+          html += '<a href="forum.html?id=' + cat.id + '" class="forum-row">';
+          var visBadge = '';
+          if (cat.visibility === 'private') visBadge = ' <span class="category-badge category-private" title="Private">&#128274;</span>';
+          if (cat.visibility === 'staff') visBadge = ' <span class="category-badge category-staff" title="Staff Only">&#128737;</span>';
+
+          html += '<div class="forum-icon">' + cat.icon + '</div>';
+          html += '<div class="forum-info"><h3>' + cat.name + visBadge + '</h3><p>' + cat.description + '</p></div>';
+          html += '<div class="forum-stats"><span>' + (topicCount || '-') + '</span><small>topics</small></div>';
+          html += '<div class="forum-latest">' + latestHtml + '</div>';
+          html += '</a>';
+        });
+
+        html += '</div></section>';
+      });
+
+      document.getElementById('forumSections').innerHTML = html;
+
+      // Re-attach collapse handlers
+      document.querySelectorAll('.forum-section .collapse').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var list = this.closest('.forum-section').querySelector('.forum-list');
+          if (list.style.display === 'none') {
+            list.style.display = 'grid';
+            this.innerHTML = '&#9662;';
+          } else {
+            list.style.display = 'none';
+            this.innerHTML = '&#9656;';
+          }
+        });
+      });
+
+      } // end else (not search)
+
+      // Load sidebar widgets + online users (independent, so one failure won't block others)
+      try { loadContributors('week'); } catch(e) { console.error(e); }
+      try { loadRecentTopics(); } catch(e) { console.error(e); }
+      try { loadForumStats(); } catch(e) { console.error(e); }
+      try { getOnlineUsers().then(function(users) { renderOnlineSection(users, 'online'); }); } catch(e) { console.error(e); }
+      try { getPreviouslyActiveUsers().then(function(users) { renderOnlineSection(users, 'previous'); }); } catch(e) { console.error(e); }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pixel Forum | Password Recovery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="auth-body">
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <div class="status-pill">Pixel-only - No injection - No overlays</div>
+      <div class="auth-links">
+        <a href="index.html" class="link">Back to Forum</a>
+      </div>
+    </div>
+  </div>
+
+  <main class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-brand">
+        <img src="assets/logo_no_bg_best.png" alt="Pixel logo" />
+        <div>
+          <h1>Reset Password</h1>
+          <p>Enter your email to receive a password reset link.</p>
+        </div>
+      </div>
+
+      <form class="auth-form" id="recoveryForm">
+        <label for="recoveryEmail">
+          <span>Email Address</span>
+          <input type="email" id="recoveryEmail" placeholder="you@email.com" required />
+        </label>
+        <button type="submit" class="btn full">Send Reset Link</button>
+      </form>
+
+      <div class="auth-note">
+        <span>Remember your password?</span>
+        <a href="index.html" class="link">Sign in from the forum</a>
+      </div>
+
+      <div id="recoveryMessage" class="auth-message" style="display: none;"></div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script>
+    const form = document.getElementById('recoveryForm');
+    const message = document.getElementById('recoveryMessage');
+    const emailInput = document.getElementById('recoveryEmail');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = emailInput.value.trim();
+      if (!email) return;
+
+      const submitBtn = form.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending...';
+
+      try {
+        const { error } = await window._supabase.auth.resetPasswordForEmail(email);
+
+        // Always show success message to avoid leaking account existence
+        message.style.display = 'block';
+        message.className = 'auth-message success';
+        message.innerHTML = '<p>If an account exists with this email, you will receive a password reset link shortly.</p>';
+        form.style.display = 'none';
+      } catch (err) {
+        message.style.display = 'block';
+        message.className = 'auth-message success';
+        message.innerHTML = '<p>If an account exists with this email, you will receive a password reset link shortly.</p>';
+        form.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>

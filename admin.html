@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pixel Forum | Admin Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .admin-panel { padding: 30px 0; }
+    .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; }
+    .admin-header h1 { font-family: "Space Grotesk", sans-serif; font-size: 1.6rem; }
+    .admin-search { background: #0f151c; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 14px; color: #e7edf4; font-size: 0.9rem; width: 260px; }
+    .admin-search:focus { outline: none; border-color: #4f7f86; }
+    .admin-card { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); }
+    .admin-table { width: 100%; border-collapse: collapse; }
+    .admin-table th { background: var(--panel-2); padding: 12px 16px; text-align: left; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); border-bottom: 1px solid var(--border); }
+    .admin-table td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 0.9rem; vertical-align: middle; }
+    .admin-table tr:last-child td { border-bottom: none; }
+    .admin-table .user-cell { display: flex; align-items: center; gap: 10px; }
+    .admin-table select { background: #0f151c; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 6px 10px; color: #e7edf4; font-size: 0.85rem; }
+    .admin-table select:focus { outline: none; border-color: #4f7f86; }
+    .admin-save-btn { background: #3b6a72; border: none; color: #e7edf4; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; transition: background 0.2s; }
+    .admin-save-btn:hover { background: #4f7f86; }
+    .admin-save-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .admin-stats { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+    .admin-stat-card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; flex: 1; min-width: 140px; }
+    .admin-stat-card .stat-value { font-size: 1.4rem; font-weight: 700; font-family: "Space Grotesk", sans-serif; }
+    .admin-stat-card .stat-label { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+    .admin-empty { padding: 40px; text-align: center; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <div class="status-pill">Pixel-only &bull; No injection &bull; No overlays</div>
+      <div class="auth-links">
+        <button class="auth-trigger" type="button" onclick="toggleDropdown(event)">
+          Existing user? Sign In <span class="caret">&#9662;</span>
+        </button>
+        <a href="signup.html" class="btn small">Sign Up</a>
+        <div class="auth-dropdown" id="authDropdown">
+          <h4>Sign In</h4>
+          <form onsubmit="return false;">
+            <label for="loginEmail">Email Address</label>
+            <input type="email" id="loginEmail" name="email" placeholder="you@email.com" required>
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" name="password" placeholder="Password" required>
+            <div class="remember-row">
+              <input type="checkbox" id="rememberMe" name="remember">
+              <label for="rememberMe" style="margin-bottom: 0;">Remember me</label>
+            </div>
+            <button type="submit" class="signin-btn">Sign In</button>
+            <a href="recovery.html" class="forgot-link">Forgot your password?</a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <header class="nav">
+    <div class="container nav-inner">
+      <div class="brand">
+        <a class="brand-link" href="index.html">
+          <div class="logo-tile">
+            <img src="assets/logo_no_bg_best.png" alt="Pixel logo" class="logo-img" />
+          </div>
+          <div>
+            <div class="brand-name">Pixel</div>
+            <div class="brand-sub">Forum</div>
+          </div>
+        </a>
+      </div>
+      <nav class="nav-links">
+        <a href="index.html">Browse</a>
+        <a href="downloads.html">Download</a>
+        <a href="store.html">Store</a>
+        <a href="guides.html">Guides</a>
+        <a href="support.html">Support</a>
+        <a href="store.html" class="accent">Upgrade to VIP</a>
+      </nav>
+      <div class="search">
+        <input type="search" placeholder="Search..." />
+        <button aria-label="Search">
+          <span>&#128269;</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Gate: non-staff -->
+  <section class="gate-shell" id="adminGate" style="display: none;">
+    <div class="container">
+      <div class="gate-card">
+        <p class="gate-title">Access Denied</p>
+        <p>This page is restricted to moderators and administrators.</p>
+        <a href="index.html" class="btn">Back to Home</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Admin panel: admins only -->
+  <section class="page-shell" id="adminPanel" style="display: none;">
+    <div class="container admin-panel">
+      <div class="admin-header">
+        <h1>Admin Panel</h1>
+        <input type="text" class="admin-search" id="adminSearch" placeholder="Search users..." />
+      </div>
+
+      <div class="admin-stats" id="adminStats"></div>
+
+      <div class="admin-card">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Posts</th>
+              <th>Joined</th>
+              <th>Warnings</th>
+              <th>Status</th>
+              <th>Role</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="userTableBody">
+            <tr><td colspan="7" class="admin-empty">Loading users...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Moderation Log -->
+      <div style="margin-top: 32px;">
+        <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 1.3rem; margin-bottom: 16px;">Moderation Log</h2>
+        <div class="admin-card">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Action</th>
+                <th>Moderator</th>
+                <th>Reason</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody id="modLogBody">
+              <tr><td colspan="4" class="admin-empty">Loading mod log...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span>Pixel Forum</span>
+      <div>
+        <a href="index.html">Home</a>
+        <a href="terms.html">Terms</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="refund.html">Refund Policy</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="data/forum-api.js"></script>
+  <script src="main.js"></script>
+  <script>
+    function toggleDropdown(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      var dropdown = document.getElementById('authDropdown');
+      dropdown.classList.toggle('open');
+    }
+    document.addEventListener('click', function(event) {
+      var dropdown = document.getElementById('authDropdown');
+      var trigger = document.querySelector('.auth-trigger');
+      if (dropdown && trigger && !dropdown.contains(event.target) && !trigger.contains(event.target)) {
+        dropdown.classList.remove('open');
+      }
+    });
+
+    // Date formatting
+    function formatAdminDate(dateStr) {
+      if (!dateStr) return '';
+      var date = new Date(dateStr);
+      var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      return months[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear();
+    }
+
+    var allUsers = [];
+    var isAdmin = false;
+
+    window.onAuthReady(function() {
+      var gate = document.getElementById('adminGate');
+      var panel = document.getElementById('adminPanel');
+
+      isAdmin = window.hasRole && window.hasRole('admin');
+
+      if (window.hasRole && window.hasRole('moderator')) {
+        if (gate) gate.style.display = 'none';
+        if (panel) panel.style.display = 'block';
+        loadUsers();
+        loadModLog();
+      } else {
+        if (panel) panel.style.display = 'none';
+        if (gate) gate.style.display = 'block';
+      }
+    });
+
+    async function loadUsers() {
+      var { data, error } = await window._supabase
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: true });
+
+      if (error) {
+        console.error('Failed to load users:', error);
+        document.getElementById('userTableBody').innerHTML =
+          '<tr><td colspan="7" class="admin-empty">Failed to load users.</td></tr>';
+        return;
+      }
+
+      allUsers = data || [];
+      renderStats(allUsers);
+      renderUsers(allUsers);
+
+      // Search filter
+      var searchInput = document.getElementById('adminSearch');
+      if (searchInput) {
+        searchInput.addEventListener('input', function() {
+          var query = searchInput.value.trim().toLowerCase();
+          if (!query) {
+            renderUsers(allUsers);
+            return;
+          }
+          var filtered = allUsers.filter(function(u) {
+            return (u.username || '').toLowerCase().indexOf(query) !== -1;
+          });
+          renderUsers(filtered);
+        });
+      }
+    }
+
+    function renderStats(users) {
+      var stats = { member: 0, vip: 0, moderator: 0, admin: 0, banned: 0 };
+      users.forEach(function(u) {
+        var r = u.role || 'member';
+        if (stats[r] !== undefined) stats[r]++;
+        else stats.member++;
+        if (u.banned) stats.banned++;
+      });
+
+      var container = document.getElementById('adminStats');
+      if (!container) return;
+      container.innerHTML = '\
+        <div class="admin-stat-card">\
+          <div class="stat-value">' + users.length + '</div>\
+          <div class="stat-label">Total Users</div>\
+        </div>\
+        <div class="admin-stat-card">\
+          <div class="stat-value">' + stats.member + '</div>\
+          <div class="stat-label">Members</div>\
+        </div>\
+        <div class="admin-stat-card">\
+          <div class="stat-value">' + stats.vip + '</div>\
+          <div class="stat-label">VIP</div>\
+        </div>\
+        <div class="admin-stat-card">\
+          <div class="stat-value">' + stats.moderator + '</div>\
+          <div class="stat-label">Moderators</div>\
+        </div>\
+        <div class="admin-stat-card">\
+          <div class="stat-value">' + stats.admin + '</div>\
+          <div class="stat-label">Admins</div>\
+        </div>\
+        <div class="admin-stat-card">\
+          <div class="stat-value" style="color: #f87171;">' + stats.banned + '</div>\
+          <div class="stat-label">Banned</div>\
+        </div>\
+      ';
+    }
+
+    function renderUsers(users) {
+      var tbody = document.getElementById('userTableBody');
+      if (!tbody) return;
+
+      if (users.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="admin-empty">No users found.</td></tr>';
+        return;
+      }
+
+      var html = '';
+      users.forEach(function(user) {
+        var avatarColor = user.avatar_color || 'blue';
+        var avatarLetter = user.avatar_letter || '?';
+        var username = user.username || 'Unknown';
+        var role = user.role || 'member';
+        var posts = user.post_count || 0;
+        var joined = formatAdminDate(user.created_at);
+        var warnings = user.warning_count || 0;
+        var isBanned = user.banned || false;
+
+        // Role column: admins get dropdown, mods see text
+        var roleCell = '';
+        if (isAdmin) {
+          roleCell = '\
+            <select class="role-select" data-user-id="' + user.user_id + '" data-original="' + role + '">\
+              <option value="member"' + (role === 'member' ? ' selected' : '') + '>Member</option>\
+              <option value="vip"' + (role === 'vip' ? ' selected' : '') + '>VIP</option>\
+              <option value="moderator"' + (role === 'moderator' ? ' selected' : '') + '>Moderator</option>\
+              <option value="admin"' + (role === 'admin' ? ' selected' : '') + '>Admin</option>\
+            </select>';
+        } else {
+          roleCell = '<span class="badge badge-role badge-' + role + '">' + role + '</span>';
+        }
+
+        // Actions column
+        var actionsCell = '';
+        if (isAdmin) {
+          actionsCell += '<button class="admin-save-btn" data-user-id="' + user.user_id + '" disabled onclick="saveRole(this)">Save</button> ';
+        }
+        if (isBanned) {
+          actionsCell += '<button class="admin-save-btn" style="background:#22c55e;" data-action="unban" data-user-id="' + escapeHTML(user.user_id) + '">Unban</button>';
+        } else {
+          actionsCell += '<button class="admin-save-btn" style="background:#ef4444;" data-action="ban" data-user-id="' + escapeHTML(user.user_id) + '" data-username="' + escapeHTML(username) + '">Ban</button>';
+        }
+
+        html += '\
+          <tr data-user-id="' + user.user_id + '">\
+            <td>\
+              <div class="user-cell">\
+                <div class="avatar avatar-sm avatar-' + escapeHTML(avatarColor) + '">' + escapeHTML(avatarLetter) + '</div>\
+                <span>' + escapeHTML(username) + '</span>\
+              </div>\
+            </td>\
+            <td>' + posts + '</td>\
+            <td style="color: var(--muted);">' + joined + '</td>\
+            <td>' + (warnings > 0 ? '<span style="color:#f0a96d; font-weight:600;">' + warnings + '</span>' : '0') + '</td>\
+            <td>' + (isBanned ? '<span style="color:#f87171; font-weight:600;">Banned</span>' : '<span style="color:#4ade80;">Active</span>') + '</td>\
+            <td>' + roleCell + '</td>\
+            <td style="white-space:nowrap;">' + actionsCell + '</td>\
+          </tr>\
+        ';
+      });
+
+      tbody.innerHTML = html;
+
+      // Event delegation for ban/unban buttons
+      tbody.addEventListener('click', function(e) {
+        var btn = e.target.closest('[data-action]');
+        if (!btn) return;
+        var action = btn.getAttribute('data-action');
+        if (action === 'ban') handleBan(btn.getAttribute('data-user-id'), btn.getAttribute('data-username'));
+        else if (action === 'unban') handleUnban(btn.getAttribute('data-user-id'));
+      });
+
+      // Enable save button when role changes (admin only)
+      if (isAdmin) {
+        var selects = tbody.querySelectorAll('.role-select');
+        selects.forEach(function(sel) {
+          sel.addEventListener('change', function() {
+            var userId = sel.getAttribute('data-user-id');
+            var original = sel.getAttribute('data-original');
+            var saveBtn = tbody.querySelector('.admin-save-btn[data-user-id="' + userId + '"]');
+            if (saveBtn) {
+              saveBtn.disabled = (sel.value === original);
+            }
+          });
+        });
+      }
+    }
+
+    async function saveRole(btn) {
+      var userId = btn.getAttribute('data-user-id');
+      var select = document.querySelector('.role-select[data-user-id="' + userId + '"]');
+      if (!select) return;
+
+      var newRole = select.value;
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+
+      var { error } = await window._supabase
+        .from('profiles')
+        .update({ role: newRole })
+        .eq('user_id', userId);
+
+      if (error) {
+        alert('Failed to update role: ' + error.message);
+        btn.textContent = 'Save';
+        btn.disabled = false;
+        return;
+      }
+
+      select.setAttribute('data-original', newRole);
+      btn.textContent = 'Saved';
+
+      for (var i = 0; i < allUsers.length; i++) {
+        if (allUsers[i].user_id === userId) {
+          allUsers[i].role = newRole;
+          break;
+        }
+      }
+      renderStats(allUsers);
+
+      setTimeout(function() {
+        btn.textContent = 'Save';
+        btn.disabled = true;
+      }, 1500);
+    }
+
+    async function handleBan(userId, username) {
+      var reason = prompt('Ban reason for ' + username + ':');
+      if (reason === null) return;
+      try {
+        await banUser(userId, reason || 'No reason provided');
+        await logModAction('ban_user', userId, 'user', reason || 'No reason provided');
+        for (var i = 0; i < allUsers.length; i++) {
+          if (allUsers[i].user_id === userId) {
+            allUsers[i].banned = true;
+            allUsers[i].ban_reason = reason;
+            break;
+          }
+        }
+        renderStats(allUsers);
+        renderUsers(allUsers);
+      } catch (err) {
+        alert('Failed to ban user: ' + err.message);
+      }
+    }
+
+    async function handleUnban(userId) {
+      if (!confirm('Unban this user?')) return;
+      try {
+        await unbanUser(userId);
+        await logModAction('unban_user', userId, 'user');
+        for (var i = 0; i < allUsers.length; i++) {
+          if (allUsers[i].user_id === userId) {
+            allUsers[i].banned = false;
+            allUsers[i].ban_reason = null;
+            break;
+          }
+        }
+        renderStats(allUsers);
+        renderUsers(allUsers);
+      } catch (err) {
+        alert('Failed to unban user: ' + err.message);
+      }
+    }
+
+    async function loadModLog() {
+      var actions = await getModActions();
+      var tbody = document.getElementById('modLogBody');
+      if (!tbody) return;
+
+      if (actions.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="admin-empty">No moderation actions yet.</td></tr>';
+        return;
+      }
+
+      // Get mod profiles for display names
+      var modIds = [];
+      actions.forEach(function(a) {
+        if (modIds.indexOf(a.mod_id) === -1) modIds.push(a.mod_id);
+      });
+      var { data: modProfiles } = await window._supabase
+        .from('profiles')
+        .select('user_id, username')
+        .in('user_id', modIds);
+      var modMap = {};
+      if (modProfiles) {
+        modProfiles.forEach(function(p) { modMap[p.user_id] = p.username; });
+      }
+
+      var html = '';
+      actions.forEach(function(action) {
+        var actionLabel = action.action_type.replace(/_/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+        html += '\
+          <tr>\
+            <td><span class="badge badge-role badge-' + (action.action_type.indexOf('ban') !== -1 ? 'admin' : action.action_type.indexOf('warn') !== -1 ? 'vip' : 'moderator') + '">' + actionLabel + '</span></td>\
+            <td>' + escapeHTML(modMap[action.mod_id] || 'Unknown') + '</td>\
+            <td style="color: var(--muted); max-width: 300px; overflow: hidden; text-overflow: ellipsis;">' + escapeHTML(action.reason || '-') + '</td>\
+            <td style="color: var(--muted);">' + formatAdminDate(action.created_at) + '</td>\
+          </tr>\
+        ';
+      });
+
+      tbody.innerHTML = html;
+    }
+  </script>
+</body>
+</html>

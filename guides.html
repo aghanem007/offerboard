@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pixel Guides | Getting Started</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="guides-top">
+    <div class="container guides-top-inner">
+      <a class="guides-brand" href="index.html">
+        <img src="assets/logo_no_bg_best.png" alt="Pixel logo" />
+        <span>Pixel Guides</span>
+      </a>
+      <div class="guides-search">
+        <input type="search" placeholder="Search guides..." />
+        <button aria-label="Search">🔍</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container guides-layout">
+    <aside class="guides-nav">
+      <h4>Pixel Guides</h4>
+      <a href="downloads.html">Download Pixel</a>
+      <a href="index.html">Forums</a>
+      <a href="#account" class="active">Getting Started</a>
+      <a href="#install">Installation</a>
+      <a href="#profiles">Profiles & Wizard</a>
+      <a href="#calibration">Calibration & Anchors</a>
+      <a href="#detection">Detection System</a>
+      <a href="#ocr">OCR</a>
+      <a href="#policy">State & Policy Engine</a>
+      <a href="#safety">Safety Gates</a>
+      <a href="#plugins">Plugin System</a>
+      <a href="#runtime">Runtime UI</a>
+      <a href="#telemetry">Telemetry & Replay</a>
+      <a href="#troubleshooting">Troubleshooting</a>
+    </aside>
+
+    <section class="guides-content">
+      <h1>Getting Started</h1>
+      <p class="lead">Welcome to Pixel Guides. This page covers the full Pixel automation framework: account setup, installation, profiles, detection, OCR, policy, safety, plugins, runtime UI, and telemetry.</p>
+
+      <h2 id="account">Creating an Account</h2>
+      <p>Create your forum account and upgrade to unlock downloads and VIP features.</p>
+      <ul>
+        <li>Visit the <a href="signup.html" class="link">Sign Up</a> page to create your account</li>
+        <li>Verify your email address</li>
+        <li>Upgrade to VIP via the <a href="store.html" class="link">Store</a> to access downloads, plugin packs, and telemetry tools</li>
+      </ul>
+
+      <h2 id="install">Installing Pixel</h2>
+      <p>Pixel requires Python 3.10 or newer and a few dependencies.</p>
+      <ul>
+        <li><strong>Python:</strong> Install Python 3.10+ from python.org (ensure "Add to PATH" is checked)</li>
+        <li><strong>Install Pixel:</strong> Run <code>pip install pixel-automation</code> from the command line</li>
+        <li><strong>Dependencies:</strong> Pillow (screen capture), Tesseract OCR (text recognition), and NumPy are installed automatically</li>
+        <li><strong>Tesseract:</strong> Install Tesseract OCR separately if not already present (see <a href="#ocr" class="link">OCR section</a>)</li>
+        <li><strong>First launch:</strong> Run <code>pixel --setup</code> to start the setup wizard and create your first profile</li>
+      </ul>
+
+      <h2 id="profiles">Profiles & Wizard</h2>
+      <p>A profile contains all configuration for a specific automation scenario: detection settings, OCR regions, policy rules, safety parameters, and plugin references.</p>
+      <ul>
+        <li><strong>What is a profile?</strong> A self-contained config file that defines what Pixel looks for, how it decides, and what actions it takes</li>
+        <li><strong>Setup wizard:</strong> Run <code>pixel --setup</code> to create a profile step by step. The wizard walks you through screen region selection, anchor placement, detection config, and safety thresholds</li>
+        <li><strong>Profile fields:</strong> Display resolution, ROI coordinates, anchor points, detection method (color markers or template matching), OCR regions, policy rules, safety gate settings, and plugin list</li>
+        <li><strong>Multiple profiles:</strong> You can create and switch between profiles for different scenarios. Each profile is a separate JSON file in the <code>profiles/</code> directory</li>
+        <li><strong>Profile manager:</strong> Use the <a href="#runtime" class="link">runtime UI</a> to browse, edit, and switch profiles during a session</li>
+      </ul>
+
+      <h2 id="calibration">Calibration & Anchors</h2>
+      <p>Calibration ties Pixel's detection to your specific screen layout. Accurate calibration is essential for reliable operation.</p>
+      <ul>
+        <li><strong>Anchors:</strong> Stable reference points on screen (e.g., a UI corner or fixed icon) defined by RGB color value, tolerance range, and pixel coordinates</li>
+        <li><strong>Click-capture workflow:</strong> Run <code>pixel --calibrate</code>, then click on each anchor point. Pixel records the coordinates and color values automatically</li>
+        <li><strong>Calibration report:</strong> After calibration, Pixel generates a report showing anchor confidence, color variance, and suggested tolerance values</li>
+        <li><strong>ROI (Region of Interest):</strong> The rectangular area of the screen that Pixel monitors. Defined by top-left and bottom-right coordinates. Smaller ROIs improve performance</li>
+        <li><strong>Resolution matching:</strong> Ensure your display resolution and scaling match the profile settings. Calibration is resolution-specific</li>
+        <li><strong>Re-calibration:</strong> Re-run calibration whenever you change resolution, scaling, or monitor setup</li>
+      </ul>
+
+      <h2 id="detection">Detection System</h2>
+      <p>Pixel uses two detection methods that can be used independently or combined for higher accuracy.</p>
+      <ul>
+        <li><strong>Color markers:</strong> Detect specific RGB color values at defined pixel positions. Each marker has a target color and a tolerance (max delta per channel). Fast and reliable for static UI elements</li>
+        <li><strong>Template matching:</strong> Compare a reference image against a screen region using normalized cross-correlation. Returns a confidence score (0.0 to 1.0). Better for complex or variable elements</li>
+        <li><strong>Detection configs:</strong> Each detection item specifies the method, target values, confidence threshold, and the ROI sub-region to search within</li>
+        <li><strong>Combined detection:</strong> Use both methods together. Pixel merges results and requires all detections to pass before proceeding to the policy engine</li>
+        <li><strong>Detection output:</strong> A set of named features (e.g., "health_bar_visible", "menu_open") with boolean or numeric values, passed to the state estimator</li>
+      </ul>
+
+      <h2 id="ocr">OCR</h2>
+      <p>Pixel integrates Tesseract OCR to read text from screen regions and extract numeric or string values for the policy engine.</p>
+      <ul>
+        <li><strong>Tesseract install:</strong> Download and install Tesseract OCR from the official repository. Add it to your system PATH, or set the path in your profile config</li>
+        <li><strong>OCR regions:</strong> Define rectangular screen areas to read. Each region has a name, coordinates, and expected format (text, integer, float, or coordinate pair)</li>
+        <li><strong>Coordinate parsing:</strong> Pixel can parse "x, y" formatted text into coordinate values for position-based decisions</li>
+        <li><strong>Preprocessing:</strong> Pixel applies grayscale conversion, thresholding, and optional inversion before OCR to improve accuracy on dark UIs</li>
+        <li><strong>OCR output:</strong> Named values (e.g., "health_text": "85", "position": [120, 340]) merged into the state alongside detection features</li>
+      </ul>
+
+      <h2 id="policy">State & Policy Engine</h2>
+      <p>The policy engine takes features from detection and OCR, evaluates rules, and decides what action to take.</p>
+      <ul>
+        <li><strong>State estimation:</strong> Detection booleans and OCR values are combined into a state dictionary updated each frame</li>
+        <li><strong>Policy rules:</strong> Each rule has a condition ("when") and an action ("then"). Conditions reference state keys with comparison operators</li>
+        <li><strong>Action kinds:</strong> Click (x, y), key press, key sequence, mouse move, or no-op. Each action can include a delay and a target region</li>
+        <li><strong>Priority:</strong> Rules have numeric priority. When multiple rules match, only the highest priority action executes</li>
+        <li><strong>Cooldowns:</strong> Each rule can define a cooldown period (minimum time before the same rule fires again) independent of the global cooldown</li>
+        <li><strong>Action output:</strong> The chosen action passes through the safety gates before reaching the input layer</li>
+      </ul>
+
+      <h2 id="safety">Safety Gates</h2>
+      <p>Pixel enforces a 12-layer safety model. Every action must pass all gates before execution. These layers work together to prevent unintended or runaway behavior.</p>
+      <ul>
+        <li><strong>Commit threshold:</strong> Actions only execute when detection confidence is 99% or higher. Configurable per profile</li>
+        <li><strong>Multi-frame confirmation:</strong> The same detection must persist across multiple consecutive frames before triggering an action</li>
+        <li><strong>Cooldown:</strong> Global minimum time between any two actions, preventing rapid-fire inputs</li>
+        <li><strong>Hysteresis:</strong> Separate thresholds for activation and deactivation to prevent toggling on edge-case detections</li>
+        <li><strong>Recheck frames:</strong> After a detection triggers, Pixel re-verifies the state before committing the action</li>
+        <li><strong>Assist mode:</strong> When enabled, Pixel highlights the intended action on screen and waits for user confirmation before executing</li>
+        <li><strong>Rate limiting:</strong> Maximum number of actions per time window (e.g., 10 actions per minute). Configurable globally and per rule</li>
+        <li><strong>Burst limiting:</strong> Maximum consecutive actions without a pause. Forces a cooldown after rapid sequences</li>
+        <li><strong>Auto-disable:</strong> Pixel stops automatically if error rate exceeds a threshold or if detections become inconsistent</li>
+        <li><strong>Kill switch:</strong> Instantly stops all activity. Default hotkey is F12, configurable in profile settings</li>
+        <li><strong>User-space only:</strong> All inputs are sent through standard user-level APIs. No kernel drivers, hooks, or injection</li>
+        <li><strong>Config validation:</strong> Pixel validates all profile settings on load and rejects invalid or unsafe configurations</li>
+      </ul>
+
+      <h2 id="plugins">Plugin System</h2>
+      <p>Plugins extend Pixel with reusable detection templates, policy rules, and configuration presets.</p>
+      <ul>
+        <li><strong>Plugin structure:</strong> Each plugin is a folder containing a manifest file (<code>plugin.json</code>), detection configs, policy rules, and optional template images</li>
+        <li><strong>Manifests:</strong> The manifest defines the plugin name, version, author, description, and lists all included configs and templates</li>
+        <li><strong>Plugin configs:</strong> Detection settings, OCR regions, and policy rules that merge into your profile when the plugin is activated</li>
+        <li><strong>Template assets:</strong> Reference images for template matching, stored in the plugin's <code>templates/</code> folder</li>
+        <li><strong>Installing plugins:</strong> Place the plugin folder in <code>plugins/</code> and reference it by name in your profile. Pixel loads and validates it on startup</li>
+        <li><strong>Community packs:</strong> VIP members can download shared plugin packs from the <a href="downloads.html" class="link">Downloads</a> page</li>
+      </ul>
+
+      <h2 id="runtime">Runtime UI</h2>
+      <p>Pixel includes a web-based runtime console for live monitoring, diagnostics, and configuration during a session.</p>
+      <ul>
+        <li><strong>Web console:</strong> Launches at <code>localhost:8080</code> when Pixel starts. View detection state, policy decisions, and action history in real time</li>
+        <li><strong>Live monitoring:</strong> See the current ROI, active detections, OCR values, and safety gate status at a glance</li>
+        <li><strong>Diagnostics:</strong> View frame timing, detection confidence trends, OCR accuracy, and error logs</li>
+        <li><strong>ROI adjuster:</strong> Fine-tune your region of interest visually through the console without editing config files</li>
+        <li><strong>Profile manager:</strong> Switch between profiles, edit settings, and reload configuration without restarting Pixel</li>
+      </ul>
+
+      <h2 id="telemetry">Telemetry & Replay</h2>
+      <p>Pixel logs all events for review, debugging, and audit purposes.</p>
+      <ul>
+        <li><strong>Event logging:</strong> Every detection, policy decision, safety gate result, and action is recorded in JSONL format with timestamps</li>
+        <li><strong>Replay analysis:</strong> Replay a session step-by-step to see exactly what Pixel detected, decided, and did at each frame</li>
+        <li><strong>Audit input:</strong> Review all inputs sent by Pixel, including coordinates, key presses, timing, and the detection state that triggered each action</li>
+        <li><strong>Replay summary:</strong> Generate a summary report with action counts, detection accuracy, safety gate hit rates, and session duration</li>
+        <li><strong>Log location:</strong> Telemetry logs are stored in the <code>logs/</code> directory, organized by session date and profile name</li>
+      </ul>
+
+      <h2 id="troubleshooting">Troubleshooting</h2>
+      <p>Common issues and their solutions:</p>
+      <ul>
+        <li><strong>Pixel won't start:</strong> Verify Python 3.10+ is installed and on PATH. Run <code>pip install --upgrade pixel-automation</code></li>
+        <li><strong>OCR not working:</strong> Ensure Tesseract is installed and the path is set correctly in your profile or system PATH</li>
+        <li><strong>Detection not matching:</strong> Re-calibrate ROI and anchors. Check that your resolution and scaling match the profile</li>
+        <li><strong>Poor accuracy:</strong> Increase the commit threshold, add multi-frame confirmation, or switch to template matching for variable elements</li>
+        <li><strong>Plugin validation errors:</strong> Check the plugin manifest for missing fields. Run <code>pixel --validate-plugin &lt;name&gt;</code> for details</li>
+        <li><strong>Profile won't load:</strong> Run <code>pixel --validate-profile &lt;name&gt;</code> to check for config errors. Common issues: missing anchor data, invalid ROI coordinates, or referencing a missing plugin</li>
+        <li><strong>Runtime UI not loading:</strong> Check that port 8080 is not in use. Try <code>pixel --ui-port 8081</code> to use an alternate port</li>
+        <li><strong>Need more help?</strong> Visit <a href="support.html" class="link">Support</a> or the <a href="forum.html?id=client-support" class="link">Client Support</a> forum</li>
+      </ul>
+    </section>
+
+    <aside class="guides-toc">
+      <h4>Table of contents</h4>
+      <a href="#account">Creating an Account</a>
+      <a href="#install">Installing Pixel</a>
+      <a href="#profiles">Profiles & Wizard</a>
+      <a href="#calibration">Calibration & Anchors</a>
+      <a href="#detection">Detection System</a>
+      <a href="#ocr">OCR</a>
+      <a href="#policy">State & Policy Engine</a>
+      <a href="#safety">Safety Gates</a>
+      <a href="#plugins">Plugin System</a>
+      <a href="#runtime">Runtime UI</a>
+      <a href="#telemetry">Telemetry & Replay</a>
+      <a href="#troubleshooting">Troubleshooting</a>
+    </aside>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span>Pixel Forum</span>
+      <div>
+        <a href="index.html">Home</a>
+        <a href="terms.html">Terms</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="refund.html">Refund Policy</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="main.js"></script>
+  <script>
+    // Highlight active nav item on scroll
+    document.querySelectorAll('.guides-nav a[href^="#"]').forEach(function(link) {
+      link.addEventListener('click', function(e) {
+        document.querySelectorAll('.guides-nav a').forEach(function(l) {
+          l.classList.remove('active');
+        });
+        this.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

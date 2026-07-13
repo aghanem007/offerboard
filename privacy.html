@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pixel Forum | Privacy Policy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <div class="status-pill">Pixel-only - No injection - No overlays</div>
+      <div class="auth-links">
+        <button class="auth-trigger" type="button" onclick="toggleDropdown(event)">
+          Existing user? Sign In <span class="caret">&#9662;</span>
+        </button>
+        <a href="signup.html" class="btn small">Sign Up</a>
+        <div class="auth-dropdown" id="authDropdown">
+          <h4>Sign In</h4>
+          <form onsubmit="return false;">
+            <label for="loginEmail">Email Address</label>
+            <input type="email" id="loginEmail" name="email" placeholder="you@email.com" required>
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" name="password" placeholder="Password" required>
+            <div class="remember-row">
+              <input type="checkbox" id="rememberMe" name="remember">
+              <label for="rememberMe" style="margin-bottom: 0;">Remember me</label>
+            </div>
+            <button type="submit" class="signin-btn">Sign In</button>
+            <a href="recovery.html" class="forgot-link">Forgot your password?</a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <header class="nav">
+    <div class="container nav-inner">
+      <div class="brand">
+        <a class="brand-link" href="index.html">
+          <div class="logo-tile">
+            <img src="assets/logo_no_bg_best.png" alt="Pixel logo" class="logo-img" />
+          </div>
+          <div>
+            <div class="brand-name">Pixel</div>
+            <div class="brand-sub">Forum</div>
+          </div>
+        </a>
+      </div>
+      <nav class="nav-links">
+        <a href="index.html">Browse</a>
+        <a href="downloads.html">Download</a>
+        <a href="store.html">Store</a>
+        <a href="guides.html">Guides</a>
+        <a href="support.html">Support</a>
+        <a href="store.html" class="accent">Upgrade to VIP</a>
+      </nav>
+      <div class="search">
+        <input type="search" placeholder="Search..." />
+        <button aria-label="Search">
+          <span>&#128269;</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container legal-page">
+    <div class="crumbs">
+      <a href="index.html">Home</a> &rsaquo; Privacy Policy
+    </div>
+
+    <div class="legal-content">
+      <h1>Privacy Policy</h1>
+      <p class="legal-updated">Last updated: February 2026</p>
+
+      <section>
+        <h2>1. Information We Collect</h2>
+        <p>We collect information you provide directly to us:</p>
+        <ul>
+          <li><strong>Account Information:</strong> Email address, username, and password when you register</li>
+          <li><strong>Profile Information:</strong> Any additional information you add to your forum profile</li>
+          <li><strong>Payment Information:</strong> Processed securely through our payment providers; we do not store card details</li>
+          <li><strong>Support Communications:</strong> Tickets, messages, and attachments you send through our support system</li>
+          <li><strong>Forum Content:</strong> Posts, replies, and other content you publish on the forums</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>2. Information Collected Automatically</h2>
+        <p>When you use our website and forum, we automatically collect:</p>
+        <ul>
+          <li>IP address and browser type</li>
+          <li>Device information and operating system</li>
+          <li>Pages visited, access times, and session duration</li>
+          <li>Cookies and similar tracking technologies</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>3. Local Telemetry Data</h2>
+        <p>The Pixel automation framework generates telemetry data locally on your machine. This data is important to understand:</p>
+        <ul>
+          <li><strong>What is logged:</strong> Detection events, policy decisions, safety gate results, input actions, and session metadata are recorded in JSONL format on your local machine</li>
+          <li><strong>Where it stays:</strong> Telemetry logs are stored locally in your <code>logs/</code> directory. We do not collect, transmit, or access your telemetry data</li>
+          <li><strong>Screen capture data:</strong> Pixel captures screen regions for detection and OCR processing. These captures are processed in memory and are not stored or transmitted</li>
+          <li><strong>Profile configurations:</strong> Your profiles, calibration data, and plugin settings are stored locally and are not sent to our servers</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>4. How We Use Your Information</h2>
+        <p>We use the information we collect to:</p>
+        <ul>
+          <li>Provide, maintain, and improve our website and forum services</li>
+          <li>Process VIP membership transactions and send related information</li>
+          <li>Deliver software updates and build downloads to eligible members</li>
+          <li>Send technical notices, support responses, and service announcements</li>
+          <li>Respond to your support tickets and questions</li>
+          <li>Detect and prevent fraud, abuse, and unauthorized account sharing</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>5. Information Sharing</h2>
+        <p>We do not sell your personal information. We may share information:</p>
+        <ul>
+          <li>With service providers who assist in our operations (hosting, payment processing)</li>
+          <li>To comply with legal obligations</li>
+          <li>To protect our rights, safety, and the integrity of our services</li>
+          <li>With your consent</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>6. Data Security</h2>
+        <p>We implement appropriate security measures to protect your personal information, including encrypted connections and secure authentication. However, no method of transmission over the Internet is 100% secure.</p>
+      </section>
+
+      <section>
+        <h2>7. Your Rights</h2>
+        <p>You have the right to:</p>
+        <ul>
+          <li>Access your personal information</li>
+          <li>Correct inaccurate data</li>
+          <li>Request deletion of your account and associated data</li>
+          <li>Export your forum posts and support history</li>
+          <li>Opt out of marketing communications</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>8. Cookies</h2>
+        <p>We use cookies to manage authentication sessions and enhance your browsing experience. You can control cookie settings through your browser, though disabling cookies may affect forum login functionality.</p>
+      </section>
+
+      <section>
+        <h2>9. Children's Privacy</h2>
+        <p>Our services are not intended for children under 13. We do not knowingly collect information from children under 13.</p>
+      </section>
+
+      <section>
+        <h2>10. Changes to This Policy</h2>
+        <p>We may update this privacy policy from time to time. We will notify you of any changes by posting the new policy on this page and updating the date above.</p>
+      </section>
+
+      <section>
+        <h2>11. Contact Us</h2>
+        <p>If you have questions about this privacy policy, please visit our <a href="contact.html" class="link">Contact page</a> or submit a request through our <a href="support.html" class="link">Support system</a>.</p>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span>Pixel Forum</span>
+      <div>
+        <a href="index.html">Home</a>
+        <a href="terms.html">Terms</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="refund.html">Refund Policy</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="main.js"></script>
+  <script>
+    function toggleDropdown(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      var dropdown = document.getElementById('authDropdown');
+      dropdown.classList.toggle('open');
+    }
+    document.addEventListener('click', function(event) {
+      var dropdown = document.getElementById('authDropdown');
+      var trigger = document.querySelector('.auth-trigger');
+      if (dropdown && trigger && !dropdown.contains(event.target) && !trigger.contains(event.target)) {
+        dropdown.classList.remove('open');
+      }
+    });
+  </script>
+</body>
+</html>

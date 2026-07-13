@@ -1,0 +1,336 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pixel Forum | Support</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <div class="status-pill">Pixel-only • No injection • No overlays</div>
+      <div class="auth-links">
+        <button class="auth-trigger" type="button" onclick="toggleDropdown(event)">
+          Existing user? Sign In <span class="caret">▾</span>
+        </button>
+        <a href="signup.html" class="btn small">Sign Up</a>
+        <div class="auth-dropdown" id="authDropdown">
+          <h4>Sign In</h4>
+          <form onsubmit="return false;">
+            <label for="loginEmail">Email Address</label>
+            <input type="email" id="loginEmail" name="email" placeholder="you@email.com" required>
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" name="password" placeholder="Password" required>
+            <div class="remember-row">
+              <input type="checkbox" id="rememberMe" name="remember">
+              <label for="rememberMe" style="margin-bottom: 0;">Remember me</label>
+            </div>
+            <button type="submit" class="signin-btn">Sign In</button>
+            <a href="recovery.html" class="forgot-link">Forgot your password?</a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <header class="nav">
+    <div class="container nav-inner">
+      <div class="brand">
+        <a class="brand-link" href="index.html">
+          <div class="logo-tile">
+            <img src="assets/logo_no_bg_best.png" alt="Pixel logo" class="logo-img" />
+          </div>
+          <div>
+            <div class="brand-name">Pixel</div>
+            <div class="brand-sub">Forum</div>
+          </div>
+        </a>
+      </div>
+      <nav class="nav-links">
+        <a href="index.html">Browse</a>
+        <a href="downloads.html">Download</a>
+        <a href="store.html">Store</a>
+        <a href="guides.html">Guides</a>
+        <a href="support.html">Support</a>
+        <a href="store.html" class="accent">Upgrade to VIP</a>
+      </nav>
+      <div class="search">
+        <input type="search" placeholder="Search..." />
+        <button aria-label="Search">
+          <span>🔍</span>
+        </button>
+      </div>
+    </div>
+  </header>
+  
+  
+  
+
+
+<section class="page-shell">
+    <div class="container">
+      <div class="crumbs">
+        <a href="index.html">Home</a> &rsaquo; Support
+      </div>
+      <div class="support-alert">
+        <strong>Scam Alert:</strong>
+        <span>We do not sell access via Discord. Always verify staff through forum PMs.</span>
+      </div>
+
+      <div class="support-card">
+        <div class="support-header">
+          <h2>Your Support Requests</h2>
+          <button class="btn ghost dev-toggle" type="button" id="devToggle">Dev: Member View</button>
+          <button class="btn" id="newRequestBtn" type="button">New Request</button>
+        </div>
+        <div id="ticketListContainer">
+          <div class="support-empty" id="ticketsEmpty">
+            There is nothing here yet.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="gate-shell">
+    <div class="container">
+      <div class="gate-card">
+        <p class="gate-title">Oops!</p>
+        <p>The page you are trying to access is not available to guests, but may be available if you sign in.</p>
+        <button class="btn" type="button" id="gateSignIn">Existing user? Sign In</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="modal" id="requestModal" aria-hidden="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-card" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <h3>New Request</h3>
+        <button class="modal-close" type="button" aria-label="Close">×</button>
+      </div>
+      <form class="modal-body" id="ticketForm">
+        <label>
+          Title
+          <input type="text" id="ticketTitle" placeholder="Short summary" required />
+        </label>
+        <label>
+          Department
+          <select id="ticketDepartment" required>
+            <option value="">Choose...</option>
+            <option value="Technical">Technical (detection, OCR, calibration)</option>
+            <option value="Plugins">Plugins (install, validation, conflicts)</option>
+            <option value="Profiles">Profiles (setup wizard, config errors)</option>
+            <option value="Billing">Billing (payments, refunds, VIP access)</option>
+            <option value="Account">Account (login, password, permissions)</option>
+            <option value="Other">Other</option>
+          </select>
+        </label>
+        <div class="modal-note">
+          <h4>Please read before opening a support ticket</h4>
+          <p>Before submitting, check the <a href="guides.html" class="link">Guides</a> for troubleshooting steps. For detection or profile issues, include your telemetry logs and profile config. For billing and payment disputes, select the Billing department.</p>
+        </div>
+        <label>
+          Details
+          <textarea id="ticketDetails" rows="6" placeholder="Describe your issue..."></textarea>
+        </label>
+        <label class="file-drop">
+          <span>Drag files here to attach, or choose files...</span>
+          <input type="file" />
+        </label>
+        <div class="modal-actions">
+          <button type="button" class="btn ghost">Cancel</button>
+          <button type="submit" class="btn">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span>Pixel Forum</span>
+      <div>
+        <a href="index.html">Home</a>
+        <a href="terms.html">Terms</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="refund.html">Refund Policy</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="data/forum-api.js"></script>
+  <script src="main.js"></script>
+  <script>
+  // Auth dropdown toggle
+  function toggleDropdown(e) {
+    if (e) { e.preventDefault(); e.stopPropagation(); }
+    var dropdown = document.getElementById('authDropdown');
+    if (dropdown.classList.contains('open')) {
+      dropdown.classList.remove('open');
+    } else {
+      dropdown.classList.add('open');
+    }
+  }
+  document.addEventListener('click', function(event) {
+    var dropdown = document.getElementById('authDropdown');
+    var trigger = document.querySelector('.auth-trigger');
+    if (dropdown && trigger && !dropdown.contains(event.target) && !trigger.contains(event.target)) {
+      dropdown.classList.remove('open');
+    }
+  });
+
+  // Support page specific functionality
+  var modal = document.getElementById('requestModal');
+  var newBtn = document.getElementById('newRequestBtn');
+  var closeBtn = modal ? modal.querySelector('.modal-close') : null;
+  var cancelBtn = modal ? modal.querySelector('.btn.ghost') : null;
+  var ticketForm = document.getElementById('ticketForm');
+
+  function closeModal() {
+    if (modal) modal.setAttribute('aria-hidden', 'true');
+  }
+
+  if (newBtn) {
+    newBtn.addEventListener('click', function() {
+      if (modal) modal.setAttribute('aria-hidden', 'false');
+    });
+  }
+
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+
+  if (modal) {
+    modal.addEventListener('click', function(event) {
+      if (event.target && event.target.classList.contains('modal-backdrop')) {
+        closeModal();
+      }
+    });
+  }
+
+  // Modal form submission — create ticket in Supabase
+  if (ticketForm) {
+    ticketForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      var title = document.getElementById('ticketTitle').value.trim();
+      var department = document.getElementById('ticketDepartment').value;
+      var details = document.getElementById('ticketDetails').value.trim();
+
+      if (!title || !department) return;
+
+      var submitBtn = ticketForm.querySelector('button[type="submit"]');
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting...'; }
+
+      try {
+        await createTicket(title, department, details);
+        closeModal();
+        ticketForm.reset();
+        loadMyTickets();
+      } catch (err) {
+        alert('Failed to create ticket: ' + err.message);
+      }
+
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Save'; }
+    });
+  }
+
+  // Render tickets
+  function loadMyTickets() {
+    getMyTickets().then(function(tickets) {
+      var container = document.getElementById('ticketListContainer');
+      var emptyEl = document.getElementById('ticketsEmpty');
+      if (!container) return;
+
+      if (!tickets || tickets.length === 0) {
+        if (emptyEl) emptyEl.style.display = 'block';
+        return;
+      }
+      if (emptyEl) emptyEl.style.display = 'none';
+
+      var html = '<div class="ticket-list">';
+      tickets.forEach(function(t) {
+        var statusClass = t.status === 'open' ? 'badge-pinned' : 'badge-locked';
+        var statusLabel = t.status.charAt(0).toUpperCase() + t.status.slice(1);
+        html += '<div class="ticket-row">';
+        html += '<div class="ticket-row-main">';
+        html += '<h4>' + escapeHTML(t.title || 'Untitled') + '</h4>';
+        html += '<div class="ticket-row-meta">';
+        html += '<span class="badge ' + statusClass + '">' + statusLabel + '</span>';
+        if (t.is_priority) html += ' <span class="badge badge-vip">Priority</span>';
+        html += ' <span class="muted">' + (t.department || '') + '</span>';
+        html += ' <span class="muted">' + formatRelativeDate(t.created_at) + '</span>';
+        html += '</div></div></div>';
+      });
+      html += '</div>';
+      container.innerHTML = html;
+    });
+  }
+
+  // Gate/Support view toggle — uses Supabase auth
+  var gate = document.querySelector('.gate-shell');
+  var support = document.querySelector('.page-shell');
+  var devToggle = document.getElementById('devToggle');
+  var gateSignIn = document.getElementById('gateSignIn');
+
+  // Hide both initially until auth resolves
+  if (gate) gate.style.display = 'none';
+  if (support) support.style.display = 'none';
+
+  window.onAuthReady(function() {
+    var loggedIn = window.isLoggedIn && window.isLoggedIn();
+    if (loggedIn) {
+      if (gate) gate.style.display = 'none';
+      if (support) support.style.display = 'block';
+
+      // Add Priority badge for VIP users
+      if (window.hasRole && window.hasRole('vip')) {
+        var headerH2 = document.querySelector('.support-header h2');
+        if (headerH2) {
+          headerH2.innerHTML = headerH2.textContent + ' <span class="badge badge-role badge-vip" style="vertical-align: middle; margin-left: 8px;">Priority</span>';
+        }
+      }
+
+      // Load user's tickets
+      loadMyTickets();
+    } else {
+      if (support) support.style.display = 'none';
+      if (gate) gate.style.display = 'block';
+    }
+    // Hide dev toggle in production
+    if (devToggle) devToggle.style.display = 'none';
+  });
+
+  if (gateSignIn) {
+    gateSignIn.addEventListener('click', function() {
+      var dropdown = document.getElementById('authDropdown');
+      if (dropdown) dropdown.classList.add('open');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
