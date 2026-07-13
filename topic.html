@@ -3,429 +3,129 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Topic - Pixel Forum</title>
+  <title>Topic — Offerboard</title>
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Instrument+Sans:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
-  <div class="topbar">
-    <div class="container topbar-inner">
-      <div class="status-pill">Pixel-only - No injection - No overlays</div>
-      <div class="auth-links">
-        <button class="auth-trigger" type="button" onclick="toggleDropdown(event)">
-          Existing user? Sign In <span class="caret">&#9662;</span>
-        </button>
-        <a href="signup.html" class="btn small">Sign Up</a>
-        <div class="auth-dropdown" id="authDropdown">
-          <h4>Sign In</h4>
-          <form onsubmit="return false;">
-            <label for="loginEmail">Email Address</label>
-            <input type="email" id="loginEmail" name="email" placeholder="you@email.com" required>
-            <label for="loginPassword">Password</label>
-            <input type="password" id="loginPassword" name="password" placeholder="Password" required>
-            <div class="remember-row">
-              <input type="checkbox" id="rememberMe" name="remember">
-              <label for="rememberMe" style="margin-bottom: 0;">Remember me</label>
-            </div>
-            <button type="submit" class="signin-btn">Sign In</button>
-            <a href="recovery.html" class="forgot-link">Forgot your password?</a>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
+<body data-page="topic">
+  <div id="chromeTop"></div>
 
-  <header class="nav">
-    <div class="container nav-inner">
-      <div class="brand">
-        <a class="brand-link" href="index.html">
-          <div class="logo-tile">
-            <img src="assets/logo_no_bg_best.png" alt="Pixel logo" class="logo-img">
-          </div>
-          <div>
-            <div class="brand-name">Pixel</div>
-            <div class="brand-sub">Forum</div>
-          </div>
-        </a>
-      </div>
-      <nav class="nav-links">
-        <a href="index.html">Browse</a>
-        <a href="downloads.html">Download</a>
-        <a href="store.html">Store</a>
-        <a href="guides.html">Guides</a>
-        <a href="support.html">Support</a>
-        <a href="store.html" class="accent">Upgrade to VIP</a>
-      </nav>
-      <div class="search">
-        <input type="search" placeholder="Search...">
-        <button aria-label="Search"><span>&#128269;</span></button>
-      </div>
-    </div>
-  </header>
-
-  <!-- Ticker Bar -->
-  <section class="faq-strip">
-    <div class="container faq-inner">
-      <span class="faq-label">FREQUENTLY ASKED QUESTIONS</span>
-      <div class="ticker-wrapper">
-        <div class="ticker-content">
-          <span>Can't open the client? Try following our <a href="guides.html">getting started guide</a></span>
-          <span class="ticker-dot">•</span>
-          <span>Still not working? Check <a href="support.html">Support</a> for common fixes</span>
-          <span class="ticker-dot">•</span>
-          <span>Detection issues? Re-calibrate your <a href="guides.html#calibration">ROI and anchors</a></span>
-          <span class="ticker-dot">•</span>
-          <span>Need help? Visit the <a href="forum.html?id=client-support">Client Support</a> forum</span>
-          <span class="ticker-dot">•</span>
-          <span>Always verify staff through <a href="contact.html">forum PMs only</a></span>
-          <span class="ticker-dot">•</span>
-          <span>Can't open the client? Try following our <a href="guides.html">getting started guide</a></span>
-          <span class="ticker-dot">•</span>
-          <span>Still not working? Check <a href="support.html">Support</a> for common fixes</span>
-          <span class="ticker-dot">•</span>
-          <span>Detection issues? Re-calibrate your <a href="guides.html#calibration">ROI and anchors</a></span>
-          <span class="ticker-dot">•</span>
-          <span>Need help? Visit the <a href="forum.html?id=client-support">Client Support</a> forum</span>
-          <span class="ticker-dot">•</span>
-          <span>Always verify staff through <a href="contact.html">forum PMs only</a></span>
-          <span class="ticker-dot">•</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <main class="container main-grid">
+  <main class="container main-grid page-shell">
     <div class="forum">
-      <!-- Breadcrumbs -->
       <div class="content-bar">
-        <div class="content-bar-left" id="breadcrumbs">
-          <a href="index.html">Home</a>
+        <div class="content-bar-left">
+          <a href="index.html">Board</a>
           <span>&#8250;</span>
-          <span id="sectionName">Pixel</span>
+          <span id="sectionName">&hellip;</span>
           <span>&#8250;</span>
-          <a href="#" id="categoryLink">Category</a>
+          <a href="#" id="categoryLink">&hellip;</a>
           <span>&#8250;</span>
-          <span id="topicTitle">Loading...</span>
-        </div>
-        <div class="content-bar-right">
-          <a href="index.html">All Activity</a>
-          <a href="#" onclick="alert('Unread content tracking is not yet available.'); return false;">Unread Content</a>
+          <span id="topicCrumb">Loading</span>
         </div>
       </div>
 
-      <!-- Topic Header -->
       <section class="topic-header">
         <div class="topic-header-content">
           <h1 id="topicHeading">Loading...</h1>
           <div class="topic-header-meta">
-            <span class="topic-author">By <span id="authorLink">Loading...</span></span>
-            <span class="topic-date" id="topicDate">Loading...</span>
-            <span class="topic-views"><span id="viewCount">0</span> views</span>
+            <span>by <span id="topicAuthor">&hellip;</span></span>
+            <span class="sep">&middot;</span>
+            <span id="topicDate"></span>
+            <span class="sep">&middot;</span>
+            <span class="mono"><span id="viewCount">0</span> views</span>
           </div>
         </div>
-        <div class="topic-header-actions">
-          <button class="follow-btn" id="followBtn" onclick="handleFollowTopic()">
-            <span id="followIcon">&#9734;</span> <span id="followText">Follow</span>
-            <span class="follow-count" id="followCount">0</span>
-          </button>
-        </div>
+        <button class="follow-btn" id="followBtn">
+          <span id="followIcon">&#9734;</span> <span id="followText">Follow</span>
+          <span class="follow-count" id="followCount">0</span>
+        </button>
       </section>
 
-      <!-- Topic Status Badges -->
-      <div class="topic-badges" id="topicBadges">
-        <!-- Populated by JavaScript -->
-      </div>
+      <div class="topic-badges" id="topicBadges"></div>
 
-      <!-- Posts Container -->
-      <div class="posts-container" id="postsContainer">
-        <!-- Original Post and Replies populated by JavaScript -->
-      </div>
+      <div class="posts-container" id="postsContainer"></div>
 
-      <!-- Pagination -->
-      <div class="pagination" id="pagination">
-        <button class="page-btn active">1</button>
-      </div>
+      <div class="pagination" id="threadPagination"></div>
 
-      <!-- Reply Box -->
       <section class="reply-section" id="replySection">
-        <h3>Reply to this topic</h3>
-        <div class="reply-box-disabled" id="replyDisabled">
-          <div class="reply-signin">
-            <p>You must be signed in to reply to this topic.</p>
-            <div class="reply-actions">
-              <a href="signup.html" class="btn">Sign Up</a>
-              <button class="btn ghost" onclick="toggleDropdown(event)">Sign In</button>
-            </div>
+        <h3>Reply</h3>
+
+        <div class="reply-box-disabled" id="replyDisabled" style="display:none;">
+          <p>Sign in to add your two cents (or your TC).</p>
+          <div class="reply-actions">
+            <a href="signup.html" class="btn">Join Offerboard</a>
+            <button class="btn ghost" type="button" onclick="toggleAuthDropdown()">Sign In</button>
           </div>
         </div>
-        <div class="reply-box-enabled" id="replyEnabled" style="display: none;">
-          <textarea class="reply-textarea" placeholder="Write your reply..." rows="5"></textarea>
-          <div class="reply-actions" style="margin-top: 12px; justify-content: flex-end;">
-            <button class="btn" onclick="submitReply()">Post Reply</button>
+
+        <div class="reply-note" id="replyLocked" style="display:none;">
+          This topic is locked. The conversation is over — for now.
+        </div>
+
+        <div class="reply-note" id="replyBanned" style="display:none;">
+          Your account is suspended, so replying is off the table.
+        </div>
+
+        <div class="reply-box-enabled" id="replyEnabled" style="display:none;">
+          <div class="editor-toolbar">
+            <button type="button" title="Bold" data-format="bold"><strong>B</strong></button>
+            <button type="button" title="Italic" data-format="italic"><em>I</em></button>
+            <button type="button" title="Strikethrough" data-format="strike"><s>S</s></button>
+            <span class="toolbar-divider"></span>
+            <button type="button" title="Inline code" data-format="code">&lt;/&gt;</button>
+            <button type="button" title="Code block" data-format="codeblock">{ }</button>
+            <button type="button" title="Quote" data-format="quote">&#10078;</button>
+          </div>
+          <textarea class="reply-textarea" placeholder="Write your reply... (markdown supported)" rows="5"></textarea>
+          <p class="form-error" id="replyError" hidden></p>
+          <div class="reply-foot">
+            <span class="reply-hint">**bold** &nbsp;*italic* &nbsp;`code` &nbsp;&gt; quote</span>
+            <button class="btn" type="button" id="postReplyBtn">Post Reply</button>
           </div>
         </div>
       </section>
     </div>
 
-    <!-- Sidebar -->
     <aside class="sidebar">
       <section class="side-card">
         <div class="side-card-header"><h3>Topic Info</h3></div>
         <div class="topic-info-list">
-          <div class="info-row">
-            <span class="info-label">Started</span>
-            <span class="info-value" id="infoStarted">-</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Replies</span>
-            <span class="info-value" id="infoReplies">0</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Views</span>
-            <span class="info-value" id="infoViews">0</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Last Reply</span>
-            <span class="info-value" id="infoLastReply">-</span>
-          </div>
+          <div class="info-row"><span class="info-label">Started</span><span class="info-value" id="infoStarted">—</span></div>
+          <div class="info-row"><span class="info-label">Replies</span><span class="info-value mono" id="infoReplies">0</span></div>
+          <div class="info-row"><span class="info-label">Views</span><span class="info-value mono" id="infoViews">0</span></div>
+          <div class="info-row"><span class="info-label">Last reply</span><span class="info-value" id="infoLastReply">—</span></div>
         </div>
       </section>
 
       <section class="side-card">
-        <div class="side-card-header"><h3>Announcements</h3></div>
+        <div class="side-card-header"><h3>House Rules</h3></div>
         <ul>
-          <li><a href="guides.html" class="arrow-link">Dispute Guide</a></li>
-          <li><a href="guides.html" class="arrow-link">Private Message Verification</a></li>
-          <li><a href="terms.html" class="arrow-link">Forum Rules</a></li>
-          <li><a href="contact.html" class="arrow-link">Staff Application Template</a></li>
+          <li>Real numbers, real stories — no LARPing offers</li>
+          <li>Roast resumes, not people</li>
+          <li>No recruiters, no self-promo spam</li>
+          <li>Anonymize interviewers and NDAs exist</li>
         </ul>
       </section>
 
-      <section class="side-card">
-        <h3>Member Access</h3>
-        <ul>
-          <li>Private Downloads (members only)</li>
-          <li>Premium Support</li>
-          <li>Beta Releases</li>
-        </ul>
-        <a href="store.html" class="btn full">Upgrade Now</a>
+      <section class="side-card accent">
+        <h3>Lurking?</h3>
+        <p>Reading is free, but the good stuff happens when you post. Join in.</p>
+        <a href="signup.html" class="btn full">Create an account</a>
       </section>
     </aside>
   </main>
 
-  <footer class="footer">
-    <div class="container footer-inner">
-      <span>Pixel Forum</span>
-      <div>
-        <a href="index.html">Home</a>
-        <a href="terms.html">Terms</a>
-        <a href="privacy.html">Privacy</a>
-        <a href="refund.html">Refund Policy</a>
-        <a href="contact.html">Contact</a>
-      </div>
-    </div>
-  </footer>
-
-  <!-- Warn User Modal -->
-  <div class="modal" id="warnModal" aria-hidden="true">
-    <div class="modal-backdrop" onclick="closeWarnModal()"></div>
-    <div class="modal-card" role="dialog" aria-modal="true" style="max-width: 480px;">
-      <div class="modal-header">
-        <h3>Issue Warning</h3>
-        <button class="modal-close" type="button" aria-label="Close" onclick="closeWarnModal()">&times;</button>
-      </div>
-      <div style="padding: 20px;">
-        <p style="margin-bottom: 12px;">Warning user: <strong id="warnUsername"></strong></p>
-        <input type="hidden" id="warnUserId" value="">
-        <label for="warnReason" style="display:block; color:#a9b4c0; font-size:0.85rem; margin-bottom:6px;">Reason</label>
-        <textarea id="warnReason" rows="4" placeholder="Enter the reason for this warning..." style="width:100%; background:#0f151c; border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:12px; color:#e7edf4; font-size:0.9rem; box-sizing:border-box; resize:vertical;"></textarea>
-        <p style="color:#f87171; font-size:0.8rem; margin-top:8px;">Users are automatically banned after 3 warnings.</p>
-        <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:16px;">
-          <button class="btn ghost" onclick="closeWarnModal()">Cancel</button>
-          <button class="btn" onclick="submitWarning()" style="background:#ef4444;">Issue Warning</button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <div id="chromeBottom"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/render.js"></script>
   <script src="js/forum-api.js"></script>
   <script src="js/main.js"></script>
   <script src="js/forum.js"></script>
-  <script>
-    // Dropdown toggle
-    function toggleDropdown(e) {
-      if (e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-      var dropdown = document.getElementById('authDropdown');
-      dropdown.classList.toggle('open');
-    }
-
-    document.addEventListener('click', function(event) {
-      var dropdown = document.getElementById('authDropdown');
-      var trigger = document.querySelector('.auth-trigger');
-      if (dropdown && trigger && !dropdown.contains(event.target) && !trigger.contains(event.target)) {
-        dropdown.classList.remove('open');
-      }
-    });
-
-    // Submit reply handler — creates reply in Supabase
-    async function submitReply() {
-      var textarea = document.querySelector('.reply-textarea');
-      var content = textarea ? textarea.value.trim() : '';
-      if (!content) {
-        alert('Please enter a reply.');
-        return;
-      }
-
-      var params = new URLSearchParams(window.location.search);
-      var topicId = params.get('id');
-
-      var btn = document.querySelector('#replyEnabled .btn');
-      if (btn) { btn.disabled = true; btn.textContent = 'Posting...'; }
-
-      try {
-        var htmlContent = '<p>' + content.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>') + '</p>';
-        await createReply(topicId, htmlContent);
-        textarea.value = '';
-        // Reload to show the new reply
-        location.reload();
-      } catch (err) {
-        alert('Failed to post reply: ' + err.message);
-        if (btn) { btn.disabled = false; btn.textContent = 'Post Reply'; }
-      }
-    }
-
-    // Load follow state for this topic
-    window.onAuthReady(function() {
-      var params = new URLSearchParams(window.location.search);
-      var topicId = params.get('id');
-      if (topicId) {
-        getFollowCount('topic', topicId).then(function(count) {
-          var el = document.getElementById('followCount');
-          if (el) el.textContent = count;
-        });
-        if (window.isLoggedIn && window.isLoggedIn()) {
-          isFollowing('topic', topicId).then(function(following) {
-            if (following) {
-              var icon = document.getElementById('followIcon');
-              var text = document.getElementById('followText');
-              if (icon) icon.innerHTML = '&#9733;';
-              if (text) text.textContent = 'Following';
-            }
-          });
-        }
-      }
-    });
-
-    // Handle follow topic
-    async function handleFollowTopic() {
-      if (!window.isLoggedIn || !window.isLoggedIn()) {
-        alert('Please sign in to follow this topic.');
-        return;
-      }
-      var params = new URLSearchParams(window.location.search);
-      var topicId = params.get('id');
-      if (!topicId) return;
-
-      try {
-        var nowFollowing = await toggleFollow('topic', topicId);
-        var icon = document.getElementById('followIcon');
-        var text = document.getElementById('followText');
-        if (nowFollowing) {
-          if (icon) icon.innerHTML = '&#9733;';
-          if (text) text.textContent = 'Following';
-        } else {
-          if (icon) icon.innerHTML = '&#9734;';
-          if (text) text.textContent = 'Follow';
-        }
-        var count = await getFollowCount('topic', topicId);
-        var countEl = document.getElementById('followCount');
-        if (countEl) countEl.textContent = count;
-      } catch (err) {
-        alert('Failed to update follow: ' + err.message);
-      }
-    }
-
-    // ---- Moderation Handlers ----
-
-    async function handleTogglePin(topicId, newState) {
-      try {
-        await toggleTopicPin(topicId, newState);
-        await logModAction(newState ? 'pin_topic' : 'unpin_topic', topicId, 'topic');
-        location.reload();
-      } catch (err) {
-        alert('Failed: ' + err.message);
-      }
-    }
-
-    async function handleToggleLock(topicId, newState) {
-      try {
-        await toggleTopicLock(topicId, newState);
-        await logModAction(newState ? 'lock_topic' : 'unlock_topic', topicId, 'topic');
-        location.reload();
-      } catch (err) {
-        alert('Failed: ' + err.message);
-      }
-    }
-
-    async function handleModDelete(type, id, categoryId) {
-      if (!confirm('Are you sure you want to delete this ' + type + '?')) return;
-      try {
-        if (type === 'topic') {
-          await softDeleteTopic(id);
-          await logModAction('delete_topic', id, 'topic');
-          window.location.href = 'forum.html?id=' + (categoryId || '');
-        } else {
-          await softDeleteReply(id);
-          await logModAction('delete_reply', id, 'reply');
-          location.reload();
-        }
-      } catch (err) {
-        alert('Failed to delete: ' + err.message);
-      }
-    }
-
-    function handleModWarn(userId, username) {
-      document.getElementById('warnUsername').textContent = username;
-      document.getElementById('warnUserId').value = userId;
-      document.getElementById('warnReason').value = '';
-      var modal = document.getElementById('warnModal');
-      if (modal) modal.setAttribute('aria-hidden', 'false');
-      document.body.style.overflow = 'hidden';
-    }
-
-    function closeWarnModal() {
-      var modal = document.getElementById('warnModal');
-      if (modal) modal.setAttribute('aria-hidden', 'true');
-      document.body.style.overflow = '';
-    }
-
-    async function submitWarning() {
-      var userId = document.getElementById('warnUserId').value;
-      var reason = document.getElementById('warnReason').value.trim();
-      if (!reason) { alert('Please enter a reason.'); return; }
-
-      var btn = document.querySelector('#warnModal .btn');
-      if (btn) { btn.disabled = true; btn.textContent = 'Issuing...'; }
-
-      try {
-        await warnUser(userId, reason);
-        await logModAction('warn_user', userId, 'user', reason);
-        closeWarnModal();
-        alert('Warning issued successfully.');
-        location.reload();
-      } catch (err) {
-        alert('Failed to warn user: ' + err.message);
-        if (btn) { btn.disabled = false; btn.textContent = 'Issue Warning'; }
-      }
-    }
-
-  </script>
 </body>
 </html>

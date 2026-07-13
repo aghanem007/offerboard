@@ -1,448 +1,706 @@
-// Forum JavaScript - Handles dynamic content for forum.html and topic.html
-// Uses async Supabase-backed data from data/forum-api.js
+/**
+ * Category and thread pages. Which one to run comes from
+ * <body data-page="forum|topic">. All user content renders through
+ * render.js (escaped markdown-lite) — never as raw HTML.
+ */
 
-window.onAuthReady(function() {
-  var path = window.location.pathname;
-  var isForumPage = path.includes('forum.html') || path.endsWith('/forum');
-  var isTopicPage = path.includes('topic.html') || path.endsWith('/topic');
-
-  if (isForumPage) {
-    initForumPage();
-  } else if (isTopicPage) {
-    initTopicPage();
-  }
+window.onAuthReady(function () {
+  var page = document.body.getAttribute('data-page');
+  if (page === 'forum') initForumPage();
+  else if (page === 'topic') initTopicPage();
 });
 
 // ============================================
-// FORUM PAGE (Category View)
+// CATEGORY PAGE
 // ============================================
+
+var _forum = { categoryId: null, sortBy: 'recent', page: 1 };
 
 async function initForumPage() {
   var params = new URLSearchParams(window.location.search);
-  var categoryId = params.get('id');
+  _forum.categoryId = params.get('id');
 
-  if (!categoryId) {
-    showError('No forum specified');
+  if (!_forum.categoryId) {
+    showPageError('That forum link is missing its destination.');
     return;
   }
 
-  // Pre-cache sections for breadcrumb lookup
   await getSections();
+  var category = await getCategory(_forum.categoryId);
 
-  var category = await getCategory(categoryId);
+  // RLS hides staff categories entirely, so non-staff get null here
   if (!category) {
-    showError('Forum not found');
+    showPageError("This forum doesn't exist — or you don't have access to it.");
     return;
   }
 
-  // Update page title
-  document.title = category.name + ' - Pixel Forum';
+  document.title = category.name + ' — Offerboard';
 
-  // Update breadcrumbs
-  var elSectionName = document.getElementById('sectionName');
-  var elCategoryName = document.getElementById('categoryName');
-  if (elSectionName) elSectionName.textContent = getSectionName(category.section_id);
-  if (elCategoryName) elCategoryName.textContent = category.name;
+  setText('sectionName', getSectionName(category.section_id));
+  setText('categoryName', category.name);
+  setText('categoryTitle', category.name);
+  setText('categoryDescription', category.description);
+  var iconEl = document.getElementById('categoryIcon');
+  if (iconEl) iconEl.innerHTML = category.icon; // trusted, seeded by us
 
-  // Update header
-  var elCatIcon = document.getElementById('categoryIcon');
-  var elCatTitle = document.getElementById('categoryTitle');
-  var elCatDesc = document.getElementById('categoryDescription');
-  if (elCatIcon) elCatIcon.innerHTML = category.icon;
-  if (elCatTitle) elCatTitle.textContent = category.name;
-  if (elCatDesc) elCatDesc.textContent = category.description;
-
-  // Show scam alert if configured
-  if (category.show_scam_alert) {
-    var elScam = document.getElementById('scamAlert');
-    if (elScam) elScam.style.display = 'block';
+  if (category.visibility === 'staff') {
+    var notice = document.createElement('div');
+    notice.className = 'staff-notice';
+    notice.innerHTML = '<span>&#128737;</span> Staff-only forum — regular members can\'t see this.';
+    var topics = document.querySelector('.topics-section');
+    if (topics) topics.parentNode.insertBefore(notice, topics);
   }
 
-  // Visibility checks
-  var vis = category.visibility || 'public';
-  if (vis === 'staff' && !(window.hasRole && window.hasRole('moderator'))) {
-    showError('This forum is restricted to staff members.');
-    return;
-  }
+  wireSortSelect();
+  wireNewTopic();
+  wireTopicModal();
+  wireFollowButton('category', _forum.categoryId);
 
-  if (vis === 'private' || vis === 'staff') {
-    var noticeEl = document.createElement('div');
-    noticeEl.className = 'privacy-notice';
-    var isStaff = window.hasRole && window.hasRole('moderator');
-    var noticeMsg;
-    if (isStaff) {
-      noticeMsg = '<span class="notice-icon">&#128274;</span> Staff view &mdash; you can see all topics in this private forum.';
-    } else if (window.getCurrentUser && window.getCurrentUser()) {
-      noticeMsg = '<span class="notice-icon">&#128274;</span> This is a private forum. You can only see topics you created.';
-    } else {
-      noticeMsg = '<span class="notice-icon">&#128274;</span> This is a private forum. Sign in to create or view your topics.';
-    }
-    noticeEl.innerHTML = noticeMsg;
-    var topicsSection = document.querySelector('.topics-section');
-    if (topicsSection) topicsSection.parentNode.insertBefore(noticeEl, topicsSection);
-  }
-
-  // Load topics
-  await loadTopics(categoryId);
-
-  // Update statistics from category data
-  if (vis === 'private' || vis === 'staff') {
-    document.getElementById('statTopics').textContent = '\u2014';
-    document.getElementById('statReplies').textContent = '\u2014';
-  } else {
-    updateForumStats(category);
-  }
+  await loadTopics();
 }
 
-async function loadTopics(categoryId, sortBy) {
-  var topics = await getTopicsByCategory(categoryId, sortBy || 'recent');
+async function loadTopics() {
+  var result = await getTopicsByCategory(_forum.categoryId, _forum.sortBy, _forum.page);
   var list = document.getElementById('topicList');
   var empty = document.getElementById('topicsEmpty');
-  var pagination = document.getElementById('pagination');
 
-  if (!topics || topics.length === 0) {
+  if (!result.topics.length) {
     if (list) list.style.display = 'none';
     if (empty) empty.style.display = 'flex';
-    if (pagination) pagination.style.display = 'none';
+    renderPagination('forumPagination', 0, _forum.page);
     return;
   }
 
-  var html = '';
-  topics.forEach(function(topic) {
-    html += createTopicRow(topic);
-  });
-
-  if (list) { list.innerHTML = html; list.style.display = 'block'; }
+  if (list) {
+    list.innerHTML = result.topics.map(createTopicRow).join('');
+    list.style.display = 'block';
+  }
   if (empty) empty.style.display = 'none';
+
+  renderPagination('forumPagination', result.total, _forum.page, function (page) {
+    _forum.page = page;
+    loadTopics();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
 }
 
 function createTopicRow(topic) {
-  var badges = [];
-  if (topic.pinned) badges.push('<span class="badge badge-pinned">Pinned</span>');
-  if (topic.locked) badges.push('<span class="badge badge-locked">Locked</span>');
-
-  var pageBadges = '';
-  if (topic.reply_count > 10) {
-    var pages = Math.ceil(topic.reply_count / 10);
-    pageBadges = '<span class="topic-pages">';
-    for (var i = 1; i <= Math.min(pages, 3); i++) {
-      pageBadges += '<span class="page-badge">' + i + '</span>';
-    }
-    if (pages > 3) {
-      pageBadges += '<span class="page-badge">...</span><span class="page-badge">' + pages + '</span>';
-    }
-    pageBadges += '</span>';
-  }
-
-  var authorAvatar = topic.author_avatar || '?';
-  var authorColor = topic.author_color || 'blue';
-  var authorName = topic.author_name || 'Unknown';
-  var dateStr = formatRelativeDate(topic.created_at);
-  var lastPosterName = topic.last_poster_name || authorName;
-  var lastPosterAvatar = topic.last_poster_avatar || authorAvatar;
-  var lastPosterColor = topic.last_poster_color || authorColor;
-  var lastPostDate = topic.last_reply_at ? formatRelativeDate(topic.last_reply_at) : dateStr;
-
-  return '\
-    <a href="topic.html?id=' + topic.id + '" class="topic-row ' + (topic.pinned ? 'pinned' : '') + '">\
-      <div class="topic-row-icon">\
-        <div class="avatar avatar-' + escapeHTML(authorColor) + '">' + escapeHTML(authorAvatar) + '</div>\
-      </div>\
-      <div class="topic-row-main">\
-        <div class="topic-row-title">\
-          ' + badges.join('') + '\
-          <h3>' + escapeHTML(topic.title) + '</h3>\
-          ' + pageBadges + '\
-        </div>\
-        <div class="topic-row-meta">\
-          <span class="topic-author">By ' + roleUsername(authorName, topic.author_role) + '</span>\
-          <span class="topic-date">' + dateStr + '</span>\
-        </div>\
-      </div>\
-      <div class="topic-row-stats">\
-        <div class="stat">\
-          <span class="stat-value">' + topic.reply_count + '</span>\
-          <span class="stat-label">replies</span>\
-        </div>\
-        <div class="stat">\
-          <span class="stat-value">' + formatNumber(topic.views) + '</span>\
-          <span class="stat-label">views</span>\
-        </div>\
-      </div>\
-      <div class="topic-row-latest">\
-        <div class="avatar avatar-sm avatar-' + escapeHTML(lastPosterColor) + '">' + escapeHTML(lastPosterAvatar) + '</div>\
-        <div class="topic-latest-text">\
-          <p>' + roleUsername(lastPosterName, topic.last_poster_role || topic.author_role) + '</p>\
-          <small>' + lastPostDate + '</small>\
-        </div>\
-      </div>\
-    </a>\
-  ';
-}
-
-function updateForumStats(category) {
-  var elTopics = document.getElementById('statTopics');
-  var elReplies = document.getElementById('statReplies');
-  if (elTopics) elTopics.textContent = category.topic_count || 0;
-  if (elReplies) elReplies.textContent = category.post_count || 0;
-}
-
-async function sortTopics(sortBy) {
-  var params = new URLSearchParams(window.location.search);
-  var categoryId = params.get('id');
-  await loadTopics(categoryId, sortBy);
-}
-
-// ============================================
-// TOPIC PAGE (Thread View)
-// ============================================
-
-async function initTopicPage() {
-  var params = new URLSearchParams(window.location.search);
-  var topicId = params.get('id');
-
-  if (!topicId) {
-    showError('No topic specified');
-    return;
-  }
-
-  await getSections();
-
-  var topic = await getTopic(topicId);
-  if (!topic) {
-    showError('Topic not found');
-    return;
-  }
-
-  var category = await getCategory(topic.category_id);
-
-  // Visibility check — staff-only categories
-  if (category && category.visibility === 'staff' && !(window.hasRole && window.hasRole('moderator'))) {
-    showError('This topic is in a staff-only forum.');
-    return;
-  }
-
-  // Update page title
-  document.title = topic.title + ' - Pixel Forum';
-
-  // Update breadcrumbs
-  var elSN = document.getElementById('sectionName');
-  var elCL = document.getElementById('categoryLink');
-  var elTT = document.getElementById('topicTitle');
-  if (elSN && category) elSN.textContent = getSectionName(category.section_id);
-  if (elCL && category) { elCL.textContent = category.name; elCL.href = 'forum.html?id=' + category.id; }
-  if (elTT) elTT.textContent = truncate(topic.title, 40);
-
-  // Update topic header
-  var elHeading = document.getElementById('topicHeading');
-  var elAuthor = document.getElementById('authorLink');
-  var elDate = document.getElementById('topicDate');
-  var elViews = document.getElementById('viewCount');
-  if (elHeading) elHeading.textContent = topic.title;
-  if (elAuthor) elAuthor.innerHTML = roleUsername(topic.author_name, topic.author_role);
-  if (elDate) elDate.textContent = formatRelativeDate(topic.created_at);
-  if (elViews) elViews.textContent = formatNumber(topic.views);
-
-  // Show badges + mod controls
-  var badgesContainer = document.getElementById('topicBadges');
   var badges = '';
   if (topic.pinned) badges += '<span class="badge badge-pinned">Pinned</span>';
   if (topic.locked) badges += '<span class="badge badge-locked">Locked</span>';
 
-  if (window.hasRole && window.hasRole('moderator')) {
-    badges += '<div class="topic-mod-controls">';
-    badges += '<button class="mod-btn" data-mod-action="pin" data-id="' + escapeHTML(topic.id) + '" data-pinned="' + !topic.pinned + '">' + (topic.pinned ? 'Unpin' : 'Pin') + '</button>';
-    badges += '<button class="mod-btn" data-mod-action="lock" data-id="' + escapeHTML(topic.id) + '" data-locked="' + !topic.locked + '">' + (topic.locked ? 'Unlock' : 'Lock') + '</button>';
-    badges += '</div>';
-  }
-  if (badgesContainer) {
-    badgesContainer.innerHTML = badges;
-    badgesContainer.addEventListener('click', function(e) {
-      var btn = e.target.closest('[data-mod-action]');
-      if (!btn) return;
-      var action = btn.getAttribute('data-mod-action');
-      if (action === 'pin') handleTogglePin(btn.getAttribute('data-id'), btn.getAttribute('data-pinned') === 'true');
-      else if (action === 'lock') handleToggleLock(btn.getAttribute('data-id'), btn.getAttribute('data-locked') === 'true');
-    });
-  }
+  var lastName = topic.last_poster_name || topic.author_name;
+  var lastAvatar = topic.last_poster_avatar || topic.author_avatar;
+  var lastColor = topic.last_poster_color || topic.author_color;
+  var lastRole = topic.last_poster_role || topic.author_role;
+  var lastDate = topic.last_reply_at ? formatRelativeDate(topic.last_reply_at)
+                                     : formatRelativeDate(topic.created_at);
 
-  // Update sidebar info
-  var elStarted = document.getElementById('infoStarted');
-  var elReplies = document.getElementById('infoReplies');
-  var elInfoViews = document.getElementById('infoViews');
-  var elLastReply = document.getElementById('infoLastReply');
-  if (elStarted) elStarted.textContent = formatRelativeDate(topic.created_at);
-  if (elReplies) elReplies.textContent = topic.reply_count;
-  if (elInfoViews) elInfoViews.textContent = formatNumber(topic.views);
-  if (elLastReply) elLastReply.textContent = topic.last_reply_at ? formatRelativeDate(topic.last_reply_at) : '-';
-
-  // Fire-and-forget view increment
-  incrementViews(topicId);
-
-  // Load posts
-  await loadPosts(topic);
-
-  // Show/hide reply box based on auth, locked, and banned status
-  if (window.isLoggedIn && window.isLoggedIn()) {
-    if (window.isBanned && window.isBanned()) {
-      var replySection = document.getElementById('replySection');
-      if (replySection) {
-        replySection.innerHTML = '<div class="banned-notice">Your account has been suspended. You cannot post replies.</div>';
-      }
-    } else if (!topic.locked) {
-      var disabled = document.getElementById('replyDisabled');
-      var enabled = document.getElementById('replyEnabled');
-      if (disabled) disabled.style.display = 'none';
-      if (enabled) enabled.style.display = 'block';
-    }
-  }
+  return '' +
+    '<a href="topic.html?id=' + encodeURIComponent(topic.id) + '" class="topic-row' + (topic.pinned ? ' pinned' : '') + '">' +
+      '<div class="topic-row-icon">' + avatarHTML(topic.author_avatar, topic.author_color) + '</div>' +
+      '<div class="topic-row-main">' +
+        '<div class="topic-row-title">' + badges + '<h3>' + escapeHTML(topic.title) + '</h3></div>' +
+        '<div class="topic-row-meta">' +
+          '<span>by ' + roleUsername(topic.author_name, topic.author_role) + '</span>' +
+          '<span class="sep">·</span>' +
+          '<span>' + formatRelativeDate(topic.created_at) + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="topic-row-stats">' +
+        '<span class="stat"><b class="mono">' + formatNumber(topic.reply_count) + '</b> replies</span>' +
+        '<span class="stat"><b class="mono">' + formatNumber(topic.views) + '</b> views</span>' +
+      '</div>' +
+      '<div class="topic-row-latest">' +
+        avatarHTML(lastAvatar, lastColor, 'sm') +
+        '<div class="topic-latest-text">' +
+          '<p>' + roleUsername(lastName, lastRole) + '</p>' +
+          '<small>' + lastDate + '</small>' +
+        '</div>' +
+      '</div>' +
+    '</a>';
 }
 
-async function loadPosts(topic) {
-  var container = document.getElementById('postsContainer');
-  var replies = await getReplies(topic.id);
-
-  // Original post — map topic fields to post-like structure
-  var opPost = {
-    id: topic.id,
-    type: 'topic',
-    authorId: topic.author_id,
-    author: topic.author_name,
-    authorAvatar: topic.author_avatar,
-    authorColor: topic.author_color,
-    authorJoinDate: formatJoinDate(topic.author_join_date),
-    authorPosts: topic.author_posts || 0,
-    authorRole: topic.author_role || 'member',
-    date: formatRelativeDate(topic.created_at),
-    content: topic.content,
-    deletedAt: topic.deleted_at,
-    categoryId: topic.category_id
-  };
-
-  var html = createPostHTML(opPost, true);
-
-  // Replies
-  replies.forEach(function(reply) {
-    var rPost = {
-      id: reply.id,
-      type: 'reply',
-      authorId: reply.author_id,
-      author: reply.author_name,
-      authorAvatar: reply.author_avatar,
-      authorColor: reply.author_color,
-      authorJoinDate: formatJoinDate(reply.author_join_date),
-      authorPosts: reply.author_posts || 0,
-      authorRole: reply.author_role || 'member',
-      date: formatRelativeDate(reply.created_at),
-      content: reply.content,
-      deletedAt: reply.deleted_at
-    };
-    html += createPostHTML(rPost, false);
+function wireSortSelect() {
+  var select = document.getElementById('sortBy');
+  if (!select) return;
+  select.addEventListener('change', function () {
+    _forum.sortBy = select.value;
+    _forum.page = 1;
+    loadTopics();
   });
+}
 
-  container.innerHTML = html;
+// ---- New topic modal ----
 
-  // Event delegation for mod action buttons
-  container.addEventListener('click', function(e) {
-    var btn = e.target.closest('[data-mod-action]');
-    if (!btn) return;
-    var action = btn.getAttribute('data-mod-action');
-    if (action === 'delete') {
-      handleModDelete(btn.getAttribute('data-type'), btn.getAttribute('data-id'), btn.getAttribute('data-category') || undefined);
-    } else if (action === 'warn') {
-      handleModWarn(btn.getAttribute('data-author-id'), btn.getAttribute('data-author-name'));
+function wireNewTopic() {
+  document.querySelectorAll('[data-action="new-topic"]').forEach(function (btn) {
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      if (!window.isLoggedIn()) {
+        showToast('Sign in to start a topic.', 'info');
+        window.toggleAuthDropdown();
+        return;
+      }
+      if (window.isBanned && window.isBanned()) {
+        showToast('Your account is suspended — you can\'t post right now.', 'error');
+        return;
+      }
+      openTopicModal();
+    });
+  });
+}
+
+function openTopicModal() {
+  var modal = document.getElementById('newTopicModal');
+  if (!modal) return;
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  var title = document.getElementById('topicTitle');
+  if (title) title.focus();
+}
+
+function closeTopicModal() {
+  var modal = document.getElementById('newTopicModal');
+  if (!modal) return;
+  modal.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function wireTopicModal() {
+  var modal = document.getElementById('newTopicModal');
+  var form = document.getElementById('newTopicForm');
+  if (!modal || !form) return;
+
+  modal.addEventListener('click', function (e) {
+    if (e.target.classList.contains('modal-backdrop') || e.target.closest('.modal-close')) {
+      closeTopicModal();
     }
   });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeTopicModal();
+  });
+
+  wireComposerToolbar(form);
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var title = document.getElementById('topicTitle').value.trim();
+    var content = document.getElementById('topicContent').value.trim();
+    var errorEl = document.getElementById('topicFormError');
+    if (!title || !content) {
+      if (errorEl) { errorEl.textContent = 'Both a title and some content are required.'; errorEl.hidden = false; }
+      return;
+    }
+
+    var submitBtn = form.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Posting...';
+    if (errorEl) errorEl.hidden = true;
+
+    try {
+      var topic = await createTopic(_forum.categoryId, title, content);
+      window.location.href = 'topic.html?id=' + topic.id;
+    } catch (err) {
+      if (errorEl) { errorEl.textContent = 'Couldn\'t post: ' + err.message; errorEl.hidden = false; }
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Post Topic';
+    }
+  });
+}
+
+/** Toolbar buttons wrap the current selection in markdown-lite markers. */
+function wireComposerToolbar(scope) {
+  var toolbar = scope.querySelector('.editor-toolbar');
+  var textarea = scope.querySelector('textarea');
+  if (!toolbar || !textarea) return;
+
+  var MARKERS = {
+    bold: ['**', '**'], italic: ['*', '*'], strike: ['~~', '~~'],
+    code: ['`', '`'], codeblock: ['\n```\n', '\n```\n'],
+    link: ['[', '](https://)'], quote: ['\n> ', ''],
+    ul: ['\n- ', ''], ol: ['\n1. ', '']
+  };
+
+  toolbar.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-format]');
+    if (!btn) return;
+    e.preventDefault();
+    var marker = MARKERS[btn.getAttribute('data-format')];
+    if (!marker) return;
+
+    var start = textarea.selectionStart;
+    var end = textarea.selectionEnd;
+    var value = textarea.value;
+    var selected = value.substring(start, end);
+
+    textarea.value = value.substring(0, start) + marker[0] + selected + marker[1] + value.substring(end);
+    textarea.focus();
+    textarea.selectionStart = start + marker[0].length;
+    textarea.selectionEnd = start + marker[0].length + selected.length;
+  });
+}
+
+// ============================================
+// THREAD PAGE
+// ============================================
+
+var _thread = {
+  topicId: null,
+  topic: null,
+  replyPage: 1,
+  replyTotal: 0,
+  rawContent: {} // post id -> raw markdown, for quoting
+};
+
+async function initTopicPage() {
+  var params = new URLSearchParams(window.location.search);
+  _thread.topicId = params.get('id');
+
+  if (!_thread.topicId) {
+    showPageError('That topic link is missing its destination.');
+    return;
+  }
+
+  await getSections();
+  var topic = await getTopic(_thread.topicId);
+
+  if (!topic || (topic.deleted_at && !(window.hasRole && window.hasRole('moderator')))) {
+    showPageError("This topic doesn't exist, was removed, or is out of reach.");
+    return;
+  }
+  _thread.topic = topic;
+
+  var category = await getCategory(topic.category_id);
+
+  document.title = topic.title + ' — Offerboard';
+
+  setText('sectionName', category ? getSectionName(category.section_id) : '');
+  var catLink = document.getElementById('categoryLink');
+  if (catLink && category) {
+    catLink.textContent = category.name;
+    catLink.href = 'forum.html?id=' + encodeURIComponent(category.id);
+  }
+  setText('topicCrumb', truncate(topic.title, 40));
+  setText('topicHeading', topic.title);
+  var authorEl = document.getElementById('topicAuthor');
+  if (authorEl) authorEl.innerHTML = roleUsername(topic.author_name, topic.author_role);
+  setText('topicDate', formatRelativeDate(topic.created_at));
+  setText('viewCount', formatNumber(topic.views));
+
+  renderTopicBadges();
+  renderTopicSidebar();
+  wireFollowButton('topic', _thread.topicId);
+  wirePostActions();
+  wireReplyBox();
+
+  incrementViews(_thread.topicId);
+  await loadPosts(1);
+  updateReplyBoxState();
+}
+
+function renderTopicBadges() {
+  var el = document.getElementById('topicBadges');
+  if (!el) return;
+  var topic = _thread.topic;
+  var html = '';
+  if (topic.pinned) html += '<span class="badge badge-pinned">Pinned</span>';
+  if (topic.locked) html += '<span class="badge badge-locked">Locked</span>';
+  if (topic.deleted_at) html += '<span class="badge badge-deleted">Removed</span>';
+
+  if (window.hasRole && window.hasRole('moderator')) {
+    html += '<span class="mod-controls">' +
+      '<button class="mod-btn" data-mod="pin">' + (topic.pinned ? 'Unpin' : 'Pin') + '</button>' +
+      '<button class="mod-btn" data-mod="lock">' + (topic.locked ? 'Unlock' : 'Lock') + '</button>' +
+      '<button class="mod-btn danger" data-mod="delete-topic">Remove</button>' +
+    '</span>';
+  }
+  el.innerHTML = html;
+}
+
+function renderTopicSidebar() {
+  var topic = _thread.topic;
+  setText('infoStarted', formatRelativeDate(topic.created_at));
+  setText('infoReplies', formatNumber(topic.reply_count));
+  setText('infoViews', formatNumber(topic.views));
+  setText('infoLastReply', topic.last_reply_at ? formatRelativeDate(topic.last_reply_at) : '—');
+}
+
+async function loadPosts(page) {
+  _thread.replyPage = page;
+  var container = document.getElementById('postsContainer');
+  if (!container) return;
+
+  var result = await getReplies(_thread.topicId, page);
+  _thread.replyTotal = result.total;
+  _thread.rawContent = {};
+
+  var html = '';
+  if (page === 1) {
+    _thread.rawContent[_thread.topic.id] = _thread.topic.content;
+    html += createPostHTML(topicAsPost(_thread.topic), true);
+  }
+  result.replies.forEach(function (reply) {
+    _thread.rawContent[reply.id] = reply.content;
+    html += createPostHTML(replyAsPost(reply), false);
+  });
+
+  container.innerHTML = html || '<p class="muted">Nothing here.</p>';
+
+  renderPagination('threadPagination', result.total, page, function (p) {
+    loadPosts(p);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
+
+function topicAsPost(topic) {
+  return {
+    id: topic.id, type: 'topic',
+    authorId: topic.author_id, author: topic.author_name,
+    avatar: topic.author_avatar, color: topic.author_color,
+    joinDate: topic.author_join_date, posts: topic.author_posts,
+    role: topic.author_role, date: topic.created_at,
+    content: topic.content, deleted: !!topic.deleted_at,
+    categoryId: topic.category_id
+  };
+}
+
+function replyAsPost(reply) {
+  return {
+    id: reply.id, type: 'reply',
+    authorId: reply.author_id, author: reply.author_name,
+    avatar: reply.author_avatar, color: reply.author_color,
+    joinDate: reply.author_join_date, posts: reply.author_posts,
+    role: reply.author_role, date: reply.created_at,
+    content: reply.content, deleted: !!reply.deleted_at
+  };
 }
 
 function createPostHTML(post, isOriginal) {
   var isMod = window.hasRole && window.hasRole('moderator');
-  var isDeleted = !!post.deletedAt;
-  var postClass = (isOriginal ? 'original-post' : 'reply-post') + (isDeleted ? ' post-deleted' : '');
+  var classes = 'post' + (isOriginal ? ' post-original' : '') + (post.deleted ? ' post-deleted' : '');
 
-  // Content: show deletion notice for regular users, faded content for mods
   var contentHTML;
-  if (isDeleted && !isMod) {
-    contentHTML = '<p class="deleted-notice"><em>This post was removed by a moderator.</em></p>';
+  if (post.deleted && !isMod) {
+    contentHTML = '<p class="deleted-notice">This post was removed by a moderator.</p>';
   } else {
-    contentHTML = post.content || '';
+    contentHTML = renderMarkdown(post.content);
   }
 
-  // Mod action buttons
-  var modButtons = '';
-  if (isMod && !isDeleted) {
-    modButtons = '\
-            <button class="post-action mod-action" title="Delete" data-mod-action="delete" data-type="' + escapeHTML(post.type) + '" data-id="' + escapeHTML(post.id) + '" data-category="' + escapeHTML(post.categoryId || '') + '">&#128465; Delete</button>\
-            <button class="post-action mod-action" title="Warn" data-mod-action="warn" data-author-id="' + escapeHTML(post.authorId) + '" data-author-name="' + escapeHTML(post.author || 'Unknown') + '">&#9888; Warn</button>\
-    ';
+  var actions = '';
+  if (!post.deleted) {
+    actions += '<button class="post-action" data-action="quote" data-id="' + escapeHTML(post.id) + '" data-author="' + escapeHTML(post.author || '') + '">Quote</button>';
+    if (isMod) {
+      if (post.type === 'reply') {
+        actions += '<button class="post-action mod" data-action="delete-reply" data-id="' + escapeHTML(post.id) + '">Remove</button>';
+      }
+      if (post.role !== 'admin' && post.authorId !== (window.getCurrentUser() && window.getCurrentUser().id)) {
+        actions += '<button class="post-action mod" data-action="warn" data-author-id="' + escapeHTML(post.authorId) + '" data-author="' + escapeHTML(post.author || '') + '">Warn</button>';
+      }
+    }
   }
 
-  return '\
-    <article class="post-container ' + postClass + '">\
-      <div class="post-author-sidebar">\
-        <div class="avatar avatar-lg avatar-' + escapeHTML(post.authorColor || 'blue') + '">' + escapeHTML(post.authorAvatar || '?') + '</div>\
-        <div class="post-author-name">' + roleUsername(post.author, post.authorRole) + '</div>\
-        <div class="post-author-role"><span class="badge badge-role badge-' + (post.authorRole || 'member') + '">' + (post.authorRole || 'member') + '</span></div>\
-        <div class="post-author-meta">\
-          <div class="author-stat">\
-            <span class="stat-label">Joined</span>\
-            <span class="stat-value">' + (post.authorJoinDate || '') + '</span>\
-          </div>\
-          <div class="author-stat">\
-            <span class="stat-label">Posts</span>\
-            <span class="stat-value">' + (post.authorPosts || 0) + '</span>\
-          </div>\
-        </div>\
-      </div>\
-      <div class="post-main">\
-        <div class="post-header">\
-          <span class="post-date">' + (post.date || '') + (isDeleted ? ' <span class="deleted-notice">[Deleted]</span>' : '') + '</span>\
-          <div class="post-actions">\
-            <button class="post-action" title="Share" onclick="alert(\'Sign in to share\')">&#128279;</button>\
-            <button class="post-action" title="Quote" onclick="alert(\'Sign in to quote\')">&#128172;</button>\
-            ' + modButtons + '\
-          </div>\
-        </div>\
-        <div class="post-content">\
-          ' + contentHTML + '\
-        </div>\
-        <div class="post-footer">\
-          <div class="post-reactions">\
-            <button class="reaction-btn" onclick="alert(\'Sign in to react\')">\
-              <span>&#128077;</span> Like\
-            </button>\
-          </div>\
-        </div>\
-      </div>\
-    </article>\
-  ';
+  return '' +
+    '<article class="' + classes + '">' +
+      '<div class="post-sidebar">' +
+        avatarHTML(post.avatar, post.color, 'lg') +
+        '<div class="post-author">' + roleUsername(post.author, post.role) + '</div>' +
+        roleBadge(post.role) +
+        '<div class="post-author-meta">' +
+          '<span>Joined ' + escapeHTML(formatJoinDate(post.joinDate)) + '</span>' +
+          '<span class="mono">' + formatNumber(post.posts) + ' posts</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="post-main">' +
+        '<div class="post-header">' +
+          '<span class="post-date">' + formatRelativeDate(post.date) +
+            (post.deleted ? ' <span class="deleted-tag">[removed]</span>' : '') + '</span>' +
+          '<div class="post-actions">' + actions + '</div>' +
+        '</div>' +
+        '<div class="post-content">' + contentHTML + '</div>' +
+      '</div>' +
+    '</article>';
+}
+
+// ---- Post actions (bound once, delegated) ----
+
+function wirePostActions() {
+  var container = document.getElementById('postsContainer');
+  if (container) {
+    container.addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-action]');
+      if (!btn) return;
+      var action = btn.getAttribute('data-action');
+      if (action === 'quote') handleQuote(btn.getAttribute('data-id'), btn.getAttribute('data-author'));
+      else if (action === 'delete-reply') handleDeleteReply(btn.getAttribute('data-id'));
+      else if (action === 'warn') handleWarn(btn.getAttribute('data-author-id'), btn.getAttribute('data-author'));
+    });
+  }
+
+  var badges = document.getElementById('topicBadges');
+  if (badges) {
+    badges.addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-mod]');
+      if (!btn) return;
+      var action = btn.getAttribute('data-mod');
+      if (action === 'pin') handleTogglePin();
+      else if (action === 'lock') handleToggleLock();
+      else if (action === 'delete-topic') handleDeleteTopic();
+    });
+  }
+}
+
+function handleQuote(postId, author) {
+  if (!window.isLoggedIn()) {
+    showToast('Sign in to quote and reply.', 'info');
+    window.toggleAuthDropdown();
+    return;
+  }
+  var raw = _thread.rawContent[postId] || '';
+  var quoted = raw.split('\n').slice(0, 6).map(function (line) { return '> ' + line; }).join('\n');
+  var textarea = document.querySelector('.reply-textarea');
+  if (!textarea) return;
+  var attribution = author ? '> **' + author + '** wrote:\n' : '';
+  textarea.value = (textarea.value ? textarea.value + '\n\n' : '') + attribution + quoted + '\n\n';
+  textarea.focus();
+  textarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+async function handleTogglePin() {
+  var next = !_thread.topic.pinned;
+  try {
+    await toggleTopicPin(_thread.topicId, next);
+    await logModAction(next ? 'pin_topic' : 'unpin_topic', _thread.topicId, 'topic');
+    _thread.topic.pinned = next;
+    renderTopicBadges();
+    showToast(next ? 'Topic pinned.' : 'Topic unpinned.', 'success');
+  } catch (err) {
+    showToast('Pin failed: ' + err.message, 'error');
+  }
+}
+
+async function handleToggleLock() {
+  var next = !_thread.topic.locked;
+  try {
+    await toggleTopicLock(_thread.topicId, next);
+    await logModAction(next ? 'lock_topic' : 'unlock_topic', _thread.topicId, 'topic');
+    _thread.topic.locked = next;
+    renderTopicBadges();
+    updateReplyBoxState();
+    showToast(next ? 'Topic locked.' : 'Topic unlocked.', 'success');
+  } catch (err) {
+    showToast('Lock failed: ' + err.message, 'error');
+  }
+}
+
+async function handleDeleteTopic() {
+  var confirmed = await openDialog({
+    title: 'Remove this topic?',
+    message: 'The topic and its replies will be hidden from members. This is a soft delete — moderators can still see it.',
+    confirmText: 'Remove Topic',
+    danger: true
+  });
+  if (!confirmed) return;
+
+  try {
+    await softDeleteTopic(_thread.topicId);
+    await logModAction('delete_topic', _thread.topicId, 'topic');
+    window.location.href = 'forum.html?id=' + encodeURIComponent(_thread.topic.category_id);
+  } catch (err) {
+    showToast('Remove failed: ' + err.message, 'error');
+  }
+}
+
+async function handleDeleteReply(replyId) {
+  var confirmed = await openDialog({
+    title: 'Remove this reply?',
+    message: 'Members will see a removal notice instead of the content.',
+    confirmText: 'Remove Reply',
+    danger: true
+  });
+  if (!confirmed) return;
+
+  try {
+    await softDeleteReply(replyId);
+    await logModAction('delete_reply', replyId, 'reply');
+    showToast('Reply removed.', 'success');
+    loadPosts(_thread.replyPage);
+  } catch (err) {
+    showToast('Remove failed: ' + err.message, 'error');
+  }
+}
+
+async function handleWarn(userId, username) {
+  var reason = await openDialog({
+    title: 'Warn ' + (username || 'user'),
+    inputLabel: 'Reason (visible to staff)',
+    note: 'Three warnings triggers an automatic ban.',
+    confirmText: 'Issue Warning',
+    danger: true
+  });
+  if (!reason) return;
+
+  try {
+    await warnUser(userId, reason);
+    await logModAction('warn_user', userId, 'user', reason);
+    showToast('Warning issued to ' + username + '.', 'success');
+  } catch (err) {
+    showToast('Warn failed: ' + err.message, 'error');
+  }
+}
+
+// ---- Reply box ----
+
+function updateReplyBoxState() {
+  var disabled = document.getElementById('replyDisabled');
+  var enabled = document.getElementById('replyEnabled');
+  var lockedNote = document.getElementById('replyLocked');
+  var bannedNote = document.getElementById('replyBanned');
+  if (!disabled || !enabled) return;
+
+  [disabled, enabled, lockedNote, bannedNote].forEach(function (el) {
+    if (el) el.style.display = 'none';
+  });
+
+  if (!window.isLoggedIn()) {
+    disabled.style.display = 'block';
+  } else if (window.isBanned && window.isBanned()) {
+    if (bannedNote) bannedNote.style.display = 'block';
+  } else if (_thread.topic && _thread.topic.locked) {
+    if (lockedNote) lockedNote.style.display = 'block';
+  } else {
+    enabled.style.display = 'block';
+  }
+}
+
+function wireReplyBox() {
+  var btn = document.getElementById('postReplyBtn');
+  var scope = document.getElementById('replyEnabled');
+  if (scope) wireComposerToolbar(scope);
+  if (!btn) return;
+
+  btn.addEventListener('click', async function () {
+    var textarea = document.querySelector('.reply-textarea');
+    var errorEl = document.getElementById('replyError');
+    var content = textarea ? textarea.value.trim() : '';
+
+    if (!content) {
+      if (errorEl) { errorEl.textContent = 'Write something first.'; errorEl.hidden = false; }
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Posting...';
+    if (errorEl) errorEl.hidden = true;
+
+    try {
+      await createReply(_thread.topicId, content);
+      textarea.value = '';
+      _thread.topic.reply_count++;
+      _thread.topic.last_reply_at = new Date().toISOString();
+      renderTopicSidebar();
+
+      // Jump to wherever the new reply landed
+      var lastPage = Math.max(1, Math.ceil(_thread.topic.reply_count / PAGE_SIZE));
+      await loadPosts(lastPage);
+      showToast('Reply posted.', 'success');
+    } catch (err) {
+      if (errorEl) { errorEl.textContent = 'Couldn\'t post: ' + err.message; errorEl.hidden = false; }
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Post Reply';
+    }
+  });
 }
 
 // ============================================
-// UTILITY FUNCTIONS
+// SHARED
 // ============================================
 
-function truncate(str, length) {
-  if (str.length <= length) return str;
-  return str.substring(0, length) + '...';
-}
+function wireFollowButton(targetType, targetId) {
+  var btn = document.getElementById('followBtn');
+  if (!btn || !targetId) return;
 
-function formatNumber(num) {
-  if (num >= 1000) {
-    return (num / 1000).toFixed(1) + 'k';
+  var icon = document.getElementById('followIcon');
+  var text = document.getElementById('followText');
+  var count = document.getElementById('followCount');
+
+  function paint(following) {
+    if (icon) icon.innerHTML = following ? '&#9733;' : '&#9734;';
+    if (text) text.textContent = following ? 'Following' : 'Follow';
   }
-  return num.toString();
+
+  getFollowCount(targetType, targetId).then(function (n) {
+    if (count) count.textContent = n;
+  });
+  if (window.isLoggedIn()) {
+    isFollowing(targetType, targetId).then(paint);
+  }
+
+  btn.addEventListener('click', async function () {
+    if (!window.isLoggedIn()) {
+      showToast('Sign in to follow.', 'info');
+      window.toggleAuthDropdown();
+      return;
+    }
+    try {
+      var following = await toggleFollow(targetType, targetId);
+      paint(following);
+      var n = await getFollowCount(targetType, targetId);
+      if (count) count.textContent = n;
+    } catch (err) {
+      showToast('Follow failed: ' + err.message, 'error');
+    }
+  });
 }
 
-function showError(message) {
+/** Numbered pagination with collapsed middle ranges. */
+function renderPagination(containerId, total, current, onChange) {
+  var el = document.getElementById(containerId);
+  if (!el) return;
+
+  var pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  if (pages <= 1) {
+    el.innerHTML = '';
+    return;
+  }
+
+  var parts = ['<button class="page-btn" data-page="' + (current - 1) + '"' + (current === 1 ? ' disabled' : '') + '>&larr;</button>'];
+  var lastShown = 0;
+  for (var p = 1; p <= pages; p++) {
+    var show = pages <= 7 || p <= 2 || p > pages - 2 || Math.abs(p - current) <= 1;
+    if (!show) continue;
+    if (lastShown && p - lastShown > 1) parts.push('<span class="page-gap">…</span>');
+    parts.push('<button class="page-btn' + (p === current ? ' active' : '') + '" data-page="' + p + '">' + p + '</button>');
+    lastShown = p;
+  }
+  parts.push('<button class="page-btn" data-page="' + (current + 1) + '"' + (current === pages ? ' disabled' : '') + '>&rarr;</button>');
+  el.innerHTML = parts.join('');
+
+  if (!el._wired && onChange) {
+    el._wired = true;
+    el.addEventListener('click', function (e) {
+      var btn = e.target.closest('.page-btn[data-page]');
+      if (!btn || btn.disabled || btn.classList.contains('active')) return;
+      onChange(parseInt(btn.getAttribute('data-page'), 10));
+    });
+  }
+  el._onChange = onChange;
+}
+
+function setText(id, value) {
+  var el = document.getElementById(id);
+  if (el) el.textContent = value;
+}
+
+function showPageError(message) {
   var el = document.querySelector('.forum');
   if (!el) return;
-  el.innerHTML = '\
-    <div class="error-state">\
-      <div class="error-icon">&#9888;</div>\
-      <h2>Error</h2>\
-      <p>' + escapeHTML(message) + '</p>\
-      <a href="index.html" class="btn">Back to Home</a>\
-    </div>\
-  ';
+  el.innerHTML =
+    '<div class="error-state">' +
+      '<div class="error-mark">404</div>' +
+      '<h2>Not here.</h2>' +
+      '<p>' + escapeHTML(message) + '</p>' +
+      '<a href="index.html" class="btn">Back to the board</a>' +
+    '</div>';
 }

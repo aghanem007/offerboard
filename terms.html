@@ -1,202 +1,59 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pixel Forum | Terms of Service</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Terms of Use — Offerboard</title>
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Instrument+Sans:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
-  <div class="topbar">
-    <div class="container topbar-inner">
-      <div class="status-pill">Pixel-only - No injection - No overlays</div>
-      <div class="auth-links">
-        <button class="auth-trigger" type="button" onclick="toggleDropdown(event)">
-          Existing user? Sign In <span class="caret">&#9662;</span>
-        </button>
-        <a href="signup.html" class="btn small">Sign Up</a>
-        <div class="auth-dropdown" id="authDropdown">
-          <h4>Sign In</h4>
-          <form onsubmit="return false;">
-            <label for="loginEmail">Email Address</label>
-            <input type="email" id="loginEmail" name="email" placeholder="you@email.com" required>
-            <label for="loginPassword">Password</label>
-            <input type="password" id="loginPassword" name="password" placeholder="Password" required>
-            <div class="remember-row">
-              <input type="checkbox" id="rememberMe" name="remember">
-              <label for="rememberMe" style="margin-bottom: 0;">Remember me</label>
-            </div>
-            <button type="submit" class="signin-btn">Sign In</button>
-            <a href="recovery.html" class="forgot-link">Forgot your password?</a>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
+<body data-page="terms">
+  <div id="chromeTop"></div>
 
-  <header class="nav">
-    <div class="container nav-inner">
-      <div class="brand">
-        <a class="brand-link" href="index.html">
-          <div class="logo-tile">
-            <img src="assets/logo_no_bg_best.png" alt="Pixel logo" class="logo-img" />
-          </div>
-          <div>
-            <div class="brand-name">Pixel</div>
-            <div class="brand-sub">Forum</div>
-          </div>
-        </a>
-      </div>
-      <nav class="nav-links">
-        <a href="index.html">Browse</a>
-        <a href="downloads.html">Download</a>
-        <a href="store.html">Store</a>
-        <a href="guides.html">Guides</a>
-        <a href="support.html">Support</a>
-        <a href="store.html" class="accent">Upgrade to VIP</a>
-      </nav>
-      <div class="search">
-        <input type="search" placeholder="Search..." />
-        <button aria-label="Search">
-          <span>&#128269;</span>
-        </button>
-      </div>
-    </div>
-  </header>
+  <main class="container page-shell page-narrow">
+    <h1 class="page-title">Terms of Use</h1>
+    <p class="page-sub">The short version: be useful, be honest, don't be a jerk.</p>
 
-  <main class="container legal-page">
-    <div class="crumbs">
-      <a href="index.html">Home</a> &rsaquo; Terms of Service
-    </div>
+    <div class="prose">
+      <h2>1. What Offerboard is</h2>
+      <p>Offerboard is a community forum where CS students share interview experiences, compensation data, resume feedback, and prep advice. It's peer knowledge, not professional advice — verify anything important before betting your career on it.</p>
 
-    <div class="legal-content">
-      <h1>Terms of Service</h1>
-      <p class="legal-updated">Last updated: February 2026</p>
+      <h2>2. Your account</h2>
+      <p>You're responsible for what happens under your account. Keep your password to yourself, pick a display name you're not embarrassed by, and don't impersonate other people or companies.</p>
 
-      <section>
-        <h2>1. Acceptance of Terms</h2>
-        <p>By accessing and using Pixel Forum and its associated services, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our services.</p>
-      </section>
+      <h2>3. House rules</h2>
+      <ul>
+        <li><strong>Post real information.</strong> Fabricated offers and made-up interview stories poison the well for everyone.</li>
+        <li><strong>Roast resumes, not people.</strong> Feedback is the point; cruelty isn't.</li>
+        <li><strong>Respect confidentiality.</strong> Don't name individual interviewers, and honor any NDA you've signed.</li>
+        <li><strong>No spam.</strong> No recruiting posts, referral farming, course shilling, or self-promo without substance.</li>
+        <li><strong>Nothing illegal or hateful.</strong> Obvious, but here it is in writing.</li>
+      </ul>
 
-      <section>
-        <h2>2. Description of Service</h2>
-        <p>Pixel is a pixel-based automation framework with a full pipeline: screen capture, detection, OCR, state estimation, policy engine, safety gates, and controlled input. Our service includes:</p>
-        <ul>
-          <li>Access to the Pixel automation framework and private builds</li>
-          <li>Profile creation, calibration tools, and configuration management</li>
-          <li>Plugin system with community-contributed detection templates and policy packs</li>
-          <li>Runtime UI for live monitoring and diagnostics</li>
-          <li>Telemetry logging and replay analysis tools</li>
-          <li>Community forum participation and technical support</li>
-          <li>Software updates, documentation, and guides</li>
-        </ul>
-      </section>
+      <h2>4. Moderation</h2>
+      <p>Moderators can remove content, issue warnings, and suspend accounts. Three warnings triggers an automatic ban. Moderation calls are made in good faith and are final — arguing in bad faith is itself a good way to collect warning number two.</p>
 
-      <section>
-        <h2>3. User Accounts</h2>
-        <p>To access certain features, you must create an account. You are responsible for:</p>
-        <ul>
-          <li>Maintaining the confidentiality of your account credentials</li>
-          <li>All activities that occur under your account</li>
-          <li>All automation actions performed by Pixel using your profiles and configurations</li>
-          <li>Notifying us immediately of any unauthorized use</li>
-        </ul>
-      </section>
+      <h2>5. Your content</h2>
+      <p>You own what you post. By posting, you give Offerboard a license to display it here. Removed content may be retained in moderated form for audit purposes.</p>
 
-      <section>
-        <h2>4. Acceptable Use</h2>
-        <p>You agree not to:</p>
-        <ul>
-          <li>Use the service for any unlawful purpose</li>
-          <li>Share your account, membership, or VIP builds with others</li>
-          <li>Attempt to reverse engineer, decompile, or modify the software</li>
-          <li>Distribute, resell, or publicly share Pixel builds, plugin packs, or template assets without authorization</li>
-          <li>Bypass, disable, or tamper with Pixel's safety gates or kill switch</li>
-          <li>Use Pixel in ways that violate the terms of service of any third-party application</li>
-          <li>Harass, abuse, or harm other users on the forums or community channels</li>
-        </ul>
-      </section>
+      <h2>6. No warranty</h2>
+      <p>Offerboard is provided as-is, run by students, for free. We make no guarantees about uptime, accuracy of posted salaries, or whether that one comment about your resume was fair.</p>
 
-      <section>
-        <h2>5. Safety and Responsibility</h2>
-        <p>Pixel includes a multi-layer safety model (commit thresholds, multi-frame confirmation, cooldowns, kill switch, and more). You are solely responsible for:</p>
-        <ul>
-          <li>Configuring safety gates appropriately for your use case</li>
-          <li>Testing profiles in safe conditions before production use</li>
-          <li>Monitoring automation sessions and being ready to intervene</li>
-          <li>Any consequences resulting from actions performed by Pixel under your configuration</li>
-        </ul>
-      </section>
-
-      <section>
-        <h2>6. Membership and Payments</h2>
-        <p>VIP membership is a one-time purchase that grants access to private builds, plugin packs, telemetry tools, priority support, and early access to new features. All payments are processed securely. Membership terms and pricing are displayed at the time of purchase.</p>
-      </section>
-
-      <section>
-        <h2>7. Intellectual Property</h2>
-        <p>All content, software, plugin templates, detection assets, and materials provided through Pixel remain our property or the property of our licensors. You are granted a limited, non-exclusive license to use the software and included assets for personal purposes only. Community-contributed plugins remain the property of their respective authors.</p>
-      </section>
-
-      <section>
-        <h2>8. Disclaimer of Warranties</h2>
-        <p>The service is provided "as is" without warranties of any kind. We do not guarantee uninterrupted or error-free operation. Detection accuracy, OCR results, and automation behavior may vary based on your system configuration, display settings, and target application.</p>
-      </section>
-
-      <section>
-        <h2>9. Limitation of Liability</h2>
-        <p>We shall not be liable for any indirect, incidental, or consequential damages arising from your use of the service, including but not limited to damages caused by automation actions, detection errors, or misconfigured safety settings.</p>
-      </section>
-
-      <section>
-        <h2>10. Termination</h2>
-        <p>We reserve the right to suspend or terminate your account at our discretion for violations of these terms, including abuse of the software, tampering with safety systems, or unauthorized distribution of builds or assets.</p>
-      </section>
-
-      <section>
-        <h2>11. Changes to Terms</h2>
-        <p>We may update these terms at any time. Continued use of the service after changes constitutes acceptance of the new terms.</p>
-      </section>
-
-      <section>
-        <h2>12. Contact</h2>
-        <p>For questions about these terms, please visit our <a href="contact.html" class="link">Contact page</a> or use the <a href="support.html" class="link">Support system</a>.</p>
-      </section>
+      <h2>7. Changes</h2>
+      <p>These terms may evolve as the community does. Significant changes will be announced on the board.</p>
     </div>
   </main>
 
-  <footer class="footer">
-    <div class="container footer-inner">
-      <span>Pixel Forum</span>
-      <div>
-        <a href="index.html">Home</a>
-        <a href="terms.html">Terms</a>
-        <a href="privacy.html">Privacy</a>
-        <a href="refund.html">Refund Policy</a>
-        <a href="contact.html">Contact</a>
-      </div>
-    </div>
-  </footer>
+  <div id="chromeBottom"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/forum-api.js"></script>
   <script src="js/main.js"></script>
-  <script>
-    function toggleDropdown(e) {
-      if (e) { e.preventDefault(); e.stopPropagation(); }
-      var dropdown = document.getElementById('authDropdown');
-      dropdown.classList.toggle('open');
-    }
-    document.addEventListener('click', function(event) {
-      var dropdown = document.getElementById('authDropdown');
-      var trigger = document.querySelector('.auth-trigger');
-      if (dropdown && trigger && !dropdown.contains(event.target) && !trigger.contains(event.target)) {
-        dropdown.classList.remove('open');
-      }
-    });
-  </script>
 </body>
 </html>

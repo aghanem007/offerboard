@@ -1,161 +1,41 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pixel Forum | Contact</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contact — Offerboard</title>
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Instrument+Sans:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
-  <div class="topbar">
-    <div class="container topbar-inner">
-      <div class="status-pill">Pixel-only - No injection - No overlays</div>
-      <div class="auth-links">
-        <button class="auth-trigger" type="button" onclick="toggleDropdown(event)">
-          Existing user? Sign In <span class="caret">&#9662;</span>
-        </button>
-        <a href="signup.html" class="btn small">Sign Up</a>
-        <div class="auth-dropdown" id="authDropdown">
-          <h4>Sign In</h4>
-          <form onsubmit="return false;">
-            <label for="loginEmail">Email Address</label>
-            <input type="email" id="loginEmail" name="email" placeholder="you@email.com" required>
-            <label for="loginPassword">Password</label>
-            <input type="password" id="loginPassword" name="password" placeholder="Password" required>
-            <div class="remember-row">
-              <input type="checkbox" id="rememberMe" name="remember">
-              <label for="rememberMe" style="margin-bottom: 0;">Remember me</label>
-            </div>
-            <button type="submit" class="signin-btn">Sign In</button>
-            <a href="recovery.html" class="forgot-link">Forgot your password?</a>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
+<body data-nav="contact" data-page="contact">
+  <div id="chromeTop"></div>
 
-  <header class="nav">
-    <div class="container nav-inner">
-      <div class="brand">
-        <a class="brand-link" href="index.html">
-          <div class="logo-tile">
-            <img src="assets/logo_no_bg_best.png" alt="Pixel logo" class="logo-img" />
-          </div>
-          <div>
-            <div class="brand-name">Pixel</div>
-            <div class="brand-sub">Forum</div>
-          </div>
-        </a>
-      </div>
-      <nav class="nav-links">
-        <a href="index.html">Browse</a>
-        <a href="downloads.html">Download</a>
-        <a href="store.html">Store</a>
-        <a href="guides.html">Guides</a>
-        <a href="support.html">Support</a>
-        <a href="store.html" class="accent">Upgrade to VIP</a>
-      </nav>
-      <div class="search">
-        <input type="search" placeholder="Search..." />
-        <button aria-label="Search">
-          <span>&#128269;</span>
-        </button>
-      </div>
-    </div>
-  </header>
+  <main class="container page-shell page-narrow">
+    <h1 class="page-title">Contact</h1>
+    <p class="page-sub">Questions, bug reports, or a mod situation that needs eyes.</p>
 
-  <main class="container legal-page">
-    <div class="crumbs">
-      <a href="index.html">Home</a> &rsaquo; Contact
-    </div>
+    <div class="prose">
+      <h2>Something broken?</h2>
+      <p>Offerboard is an open-source project. If you hit a bug, the fastest route is opening an issue on the GitHub repository — include what you did, what you expected, and what actually happened.</p>
 
-    <div class="contact-content">
-      <h1>Contact Us</h1>
-      <p class="lead">Have a question or need help? Choose the best way to reach us below.</p>
+      <h2>Community issues</h2>
+      <p>See something that breaks the house rules? Moderators patrol the board daily. Post in <a href="forum.html?id=general">General</a> and tag the situation, or reach out to any moderator directly — they're marked with a blue <strong>Mod</strong> badge.</p>
 
-      <div class="contact-grid">
-        <div class="contact-card">
-          <div class="contact-icon">&#128172;</div>
-          <h3>Forum Support</h3>
-          <p>For technical issues, billing questions, or account help, use our support system.</p>
-          <a href="support.html" class="btn">Open Support</a>
-        </div>
-
-        <div class="contact-card">
-          <div class="contact-icon">&#128214;</div>
-          <h3>Documentation</h3>
-          <p>Full guides covering installation, profiles, detection, OCR, safety gates, plugins, and telemetry.</p>
-          <a href="guides.html" class="btn">View Guides</a>
-        </div>
-
-        <div class="contact-card">
-          <div class="contact-icon">&#128101;</div>
-          <h3>Community</h3>
-          <p>Join the discussion in our forums and connect with other users.</p>
-          <a href="index.html" class="btn">Visit Forums</a>
-        </div>
-      </div>
-
-      <div class="contact-info-section">
-        <h2>Important Information</h2>
-
-        <div class="info-box warning">
-          <h4>Scam Warning</h4>
-          <p>We do <strong>not</strong> sell access via Discord, Telegram, or any third-party platform. Always verify staff members through official forum PMs. If someone contacts you claiming to be staff outside of the forum, it is likely a scam.</p>
-        </div>
-
-        <div class="info-box">
-          <h4>Response Times</h4>
-          <p>Support requests are typically answered within 24-48 hours. VIP members receive priority support.</p>
-        </div>
-
-        <div class="info-box">
-          <h4>Before Contacting Us</h4>
-          <ul>
-            <li>Check the <a href="guides.html" class="link">Guides</a> for setup, calibration, and troubleshooting steps</li>
-            <li>Run <code>pixel --validate-profile</code> to check your profile for config errors</li>
-            <li>Review your telemetry logs in the <code>logs/</code> directory for error details</li>
-            <li>Search the forums for similar issues</li>
-            <li>Make sure you're using the latest Pixel build</li>
-            <li>Include relevant details (error messages, telemetry excerpts, screenshots) in your request</li>
-          </ul>
-        </div>
-      </div>
+      <h2>Everything else</h2>
+      <p>For anything that doesn't fit above, start a topic in <a href="forum.html?id=general">General</a>. The community is faster than any support inbox.</p>
     </div>
   </main>
 
-  <footer class="footer">
-    <div class="container footer-inner">
-      <span>Pixel Forum</span>
-      <div>
-        <a href="index.html">Home</a>
-        <a href="terms.html">Terms</a>
-        <a href="privacy.html">Privacy</a>
-        <a href="refund.html">Refund Policy</a>
-        <a href="contact.html">Contact</a>
-      </div>
-    </div>
-  </footer>
+  <div id="chromeBottom"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/forum-api.js"></script>
   <script src="js/main.js"></script>
-  <script>
-    function toggleDropdown(e) {
-      if (e) { e.preventDefault(); e.stopPropagation(); }
-      var dropdown = document.getElementById('authDropdown');
-      dropdown.classList.toggle('open');
-    }
-    document.addEventListener('click', function(event) {
-      var dropdown = document.getElementById('authDropdown');
-      var trigger = document.querySelector('.auth-trigger');
-      if (dropdown && trigger && !dropdown.contains(event.target) && !trigger.contains(event.target)) {
-        dropdown.classList.remove('open');
-      }
-    });
-  </script>
 </body>
 </html>

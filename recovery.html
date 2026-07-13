@@ -1,20 +1,21 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pixel Forum | Password Recovery</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reset Password — Offerboard</title>
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Instrument+Sans:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
-<body class="auth-body">
+<body class="auth-body" data-page="recovery">
   <div class="topbar">
     <div class="container topbar-inner">
-      <div class="status-pill">Pixel-only - No injection - No overlays</div>
+      <span class="topbar-tag">For CS students chasing offer #1</span>
       <div class="auth-links">
-        <a href="index.html" class="link">Back to Forum</a>
+        <a href="index.html" class="btn small ghost">Back to the board</a>
       </div>
     </div>
   </div>
@@ -22,61 +23,59 @@
   <main class="auth-wrap">
     <div class="auth-card">
       <div class="auth-brand">
-        <img src="assets/logo_no_bg_best.png" alt="Pixel logo" />
+        <img src="assets/logo.svg" alt="Offerboard logo">
         <div>
-          <h1>Reset Password</h1>
-          <p>Enter your email to receive a password reset link.</p>
+          <h1>Reset password</h1>
+          <p>Happens to the best of us. Enter your email and we'll send a reset link.</p>
         </div>
       </div>
 
       <form class="auth-form" id="recoveryForm">
         <label for="recoveryEmail">
-          <span>Email Address</span>
-          <input type="email" id="recoveryEmail" placeholder="you@email.com" required />
+          <span>Email</span>
+          <input type="email" id="recoveryEmail" placeholder="you@school.edu" required autocomplete="email">
         </label>
-        <button type="submit" class="btn full">Send Reset Link</button>
+        <button type="submit" class="btn full">Send reset link</button>
       </form>
 
-      <div class="auth-note">
-        <span>Remember your password?</span>
-        <a href="index.html" class="link">Sign in from the forum</a>
-      </div>
+      <div id="recoveryMessage" class="auth-message" style="display:none;"></div>
 
-      <div id="recoveryMessage" class="auth-message" style="display: none;"></div>
+      <div class="auth-note">
+        Remembered it after all? <a href="index.html">Sign in from the board</a>
+      </div>
     </div>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
   <script>
-    const form = document.getElementById('recoveryForm');
-    const message = document.getElementById('recoveryMessage');
-    const emailInput = document.getElementById('recoveryEmail');
+    (function () {
+      'use strict';
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = emailInput.value.trim();
-      if (!email) return;
+      var form = document.getElementById('recoveryForm');
+      var message = document.getElementById('recoveryMessage');
 
-      const submitBtn = form.querySelector('button[type="submit"]');
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Sending...';
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        var email = document.getElementById('recoveryEmail').value.trim();
+        if (!email) return;
 
-      try {
-        const { error } = await window._supabase.auth.resetPasswordForEmail(email);
+        var submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending...';
 
-        // Always show success message to avoid leaking account existence
+        try {
+          await window._supabase.auth.resetPasswordForEmail(email);
+        } catch (err) {
+          // fall through — same message either way, so account existence never leaks
+        }
+
+        form.style.display = 'none';
         message.style.display = 'block';
         message.className = 'auth-message success';
-        message.innerHTML = '<p>If an account exists with this email, you will receive a password reset link shortly.</p>';
-        form.style.display = 'none';
-      } catch (err) {
-        message.style.display = 'block';
-        message.className = 'auth-message success';
-        message.innerHTML = '<p>If an account exists with this email, you will receive a password reset link shortly.</p>';
-        form.style.display = 'none';
-      }
-    });
+        message.innerHTML = '<p>If an account exists for that email, a reset link is on its way.</p>';
+      });
+    })();
   </script>
 </body>
 </html>

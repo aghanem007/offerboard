@@ -1,58 +1,13 @@
 /**
- * Forum API — Supabase-backed data layer
- * Replaces static data/forums.js with real database queries.
+ * Data layer. Every Supabase read/write in the app goes through this
+ * file — pages and widgets never touch the client directly. (This is
+ * also the seam where a caching API can slot in later without touching
+ * any UI code.)
  */
 
-// ---- HTML escaping ----
+var PAGE_SIZE = 20;
 
-function escapeHTML(str) {
-  if (!str) return '';
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
-// ---- Username helpers ----
-
-function roleUsername(name, role) {
-  var r = role || 'member';
-  return '<span class="username username-' + r + '">' + escapeHTML(name || 'Unknown') + '</span>';
-}
-
-// ---- Date formatting helpers ----
-
-function formatRelativeDate(dateStr) {
-  if (!dateStr) return '';
-  var now = new Date();
-  var date = new Date(dateStr);
-  var diffMs = now - date;
-  var diffSec = Math.floor(diffMs / 1000);
-  var diffMin = Math.floor(diffSec / 60);
-  var diffHr  = Math.floor(diffMin / 60);
-  var diffDay = Math.floor(diffHr / 24);
-
-  if (diffSec < 60) return 'just now';
-  if (diffMin < 60) return diffMin + (diffMin === 1 ? ' minute ago' : ' minutes ago');
-  if (diffHr < 24) return diffHr + (diffHr === 1 ? ' hour ago' : ' hours ago');
-  if (diffDay < 7) return diffDay + (diffDay === 1 ? ' day ago' : ' days ago');
-
-  var months = ['January','February','March','April','May','June',
-                'July','August','September','October','November','December'];
-  return months[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear();
-}
-
-function formatJoinDate(dateStr) {
-  if (!dateStr) return '';
-  var date = new Date(dateStr);
-  var months = ['January','February','March','April','May','June',
-                'July','August','September','October','November','December'];
-  return months[date.getMonth()] + ' ' + date.getFullYear();
-}
-
-// ---- Section name lookup ----
+// ---- Sections ----
 
 var _sectionsCache = null;
 
@@ -69,18 +24,18 @@ async function getSections() {
 
 function getSectionName(sectionId) {
   if (!_sectionsCache) return sectionId;
-  var s = _sectionsCache.find(function(sec) { return sec.id === sectionId; });
+  var s = _sectionsCache.find(function (sec) { return sec.id === sectionId; });
   return s ? s.name : sectionId;
 }
 
-// ---- Category queries ----
+// ---- Categories ----
 
 async function getCategory(categoryId) {
   var { data, error } = await window._supabase
     .from('categories')
-    .select('*, sections(name)')
+    .select('*')
     .eq('id', categoryId)
-    .single();
+    .maybeSingle();
   if (error) { console.error('getCategory:', error); return null; }
   return data;
 }
@@ -88,39 +43,45 @@ async function getCategory(categoryId) {
 async function getCategoriesWithLatest() {
   var { data, error } = await window._supabase
     .from('categories_with_latest')
-    .select('*');
+    .select('*')
+    .order('section_sort_order')
+    .order('sort_order');
   if (error) { console.error('getCategoriesWithLatest:', error); return []; }
-  return data;
+  return data || [];
 }
 
-// ---- Topic queries ----
+// ---- Topics ----
 
-async function getTopicsByCategory(categoryId, sortBy) {
+async function getTopicsByCategory(categoryId, sortBy, page) {
+  var from = ((page || 1) - 1) * PAGE_SIZE;
   var query = window._supabase
     .from('topics_with_authors')
-    .select('*')
+    .select('*', { count: 'exact' })
     .eq('category_id', categoryId)
     .is('deleted_at', null);
 
   switch (sortBy) {
     case 'newest':
-      query = query.order('pinned', { ascending: false }).order('created_at', { ascending: false });
+      query = query.order('pinned', { ascending: false })
+                   .order('created_at', { ascending: false });
       break;
     case 'replies':
-      query = query.order('pinned', { ascending: false }).order('reply_count', { ascending: false });
+      query = query.order('pinned', { ascending: false })
+                   .order('reply_count', { ascending: false });
       break;
     case 'views':
-      query = query.order('pinned', { ascending: false }).order('views', { ascending: false });
+      query = query.order('pinned', { ascending: false })
+                   .order('views', { ascending: false });
       break;
-    case 'recent':
-    default:
-      query = query.order('pinned', { ascending: false }).order('last_reply_at', { ascending: false, nullsFirst: false }).order('created_at', { ascending: false });
-      break;
+    default: // recently updated
+      query = query.order('pinned', { ascending: false })
+                   .order('last_reply_at', { ascending: false, nullsFirst: false })
+                   .order('created_at', { ascending: false });
   }
 
-  var { data, error } = await query;
-  if (error) { console.error('getTopicsByCategory:', error); return []; }
-  return data || [];
+  var { data, error, count } = await query.range(from, from + PAGE_SIZE - 1);
+  if (error) { console.error('getTopicsByCategory:', error); return { topics: [], total: 0 }; }
+  return { topics: data || [], total: count || 0 };
 }
 
 async function getTopic(topicId) {
@@ -128,28 +89,41 @@ async function getTopic(topicId) {
     .from('topics_with_authors')
     .select('*')
     .eq('id', topicId)
-    .single();
+    .maybeSingle();
   if (error) { console.error('getTopic:', error); return null; }
   return data;
 }
 
-// ---- Reply queries ----
-
-async function getReplies(topicId) {
+async function getRecentTopics(limit) {
   var { data, error } = await window._supabase
-    .from('replies_with_authors')
-    .select('*')
-    .eq('topic_id', topicId)
-    .order('created_at', { ascending: true });
-  if (error) { console.error('getReplies:', error); return []; }
+    .from('topics_with_authors')
+    .select('id, title, author_name, author_avatar, author_color, created_at')
+    .is('deleted_at', null)
+    .order('created_at', { ascending: false })
+    .limit(limit || 5);
+  if (error) { console.error('getRecentTopics:', error); return []; }
   return data || [];
+}
+
+// ---- Replies ----
+
+async function getReplies(topicId, page) {
+  var from = ((page || 1) - 1) * PAGE_SIZE;
+  var { data, error, count } = await window._supabase
+    .from('replies_with_authors')
+    .select('*', { count: 'exact' })
+    .eq('topic_id', topicId)
+    .order('created_at', { ascending: true })
+    .range(from, from + PAGE_SIZE - 1);
+  if (error) { console.error('getReplies:', error); return { replies: [], total: 0 }; }
+  return { replies: data || [], total: count || 0 };
 }
 
 // ---- Mutations ----
 
 async function createTopic(categoryId, title, content) {
   var user = window.getCurrentUser();
-  if (!user) throw new Error('Not authenticated');
+  if (!user) throw new Error('Not signed in');
 
   var { data, error } = await window._supabase
     .from('topics')
@@ -167,7 +141,7 @@ async function createTopic(categoryId, title, content) {
 
 async function createReply(topicId, content) {
   var user = window.getCurrentUser();
-  if (!user) throw new Error('Not authenticated');
+  if (!user) throw new Error('Not signed in');
 
   var { data, error } = await window._supabase
     .from('replies')
@@ -182,14 +156,12 @@ async function createReply(topicId, content) {
   return data;
 }
 
-// ---- View counter ----
-
 async function incrementViews(topicId) {
   var { error } = await window._supabase.rpc('increment_topic_views', { p_topic_id: topicId });
   if (error) console.error('incrementViews:', error);
 }
 
-// ---- Moderation functions ----
+// ---- Moderation ----
 
 async function toggleTopicPin(topicId, pinned) {
   var { error } = await window._supabase
@@ -255,7 +227,7 @@ async function getModActions() {
   return data || [];
 }
 
-// ---- Online / Activity ----
+// ---- Presence ----
 
 async function updateLastSeen() {
   var { error } = await window._supabase.rpc('update_last_seen');
@@ -274,7 +246,7 @@ async function getPreviouslyActiveUsers() {
   return data || [];
 }
 
-// ---- Contributors ----
+// ---- Community widgets ----
 
 async function getTopContributors(period, limit) {
   var { data, error } = await window._supabase.rpc('get_top_contributors', {
@@ -285,30 +257,19 @@ async function getTopContributors(period, limit) {
   return data || [];
 }
 
-// ---- Sidebar widgets ----
-
-async function getRecentTopics(limit) {
-  var { data, error } = await window._supabase
-    .from('topics_with_authors')
-    .select('id, title, author_name, author_avatar, author_color, created_at')
-    .is('deleted_at', null)
-    .order('created_at', { ascending: false })
-    .limit(limit || 5);
-  if (error) { console.error('getRecentTopics:', error); return []; }
-  return data || [];
-}
-
 async function getForumStatistics() {
-  var stats = { topics: 0, posts: 0, members: 0 };
   var results = await Promise.all([
     window._supabase.from('topics').select('id', { count: 'exact', head: true }).is('deleted_at', null),
     window._supabase.from('replies').select('id', { count: 'exact', head: true }).is('deleted_at', null),
     window._supabase.from('profiles').select('user_id', { count: 'exact', head: true })
   ]);
-  stats.topics = results[0].count || 0;
-  stats.posts = (results[0].count || 0) + (results[1].count || 0);
-  stats.members = results[2].count || 0;
-  return stats;
+  var topics = results[0].count || 0;
+  var replies = results[1].count || 0;
+  return {
+    topics: topics,
+    posts: topics + replies,
+    members: results[2].count || 0
+  };
 }
 
 // ---- Search ----
@@ -322,60 +283,6 @@ async function searchForum(query) {
   return data || [];
 }
 
-// ---- Support tickets ----
-
-async function createTicket(title, department, details) {
-  var user = window.getCurrentUser();
-  if (!user) throw new Error('Not authenticated');
-  var isPriority = window.hasRole && window.hasRole('vip');
-  var { data, error } = await window._supabase
-    .from('support_tickets')
-    .insert({
-      user_id: user.id,
-      title: title,
-      department: department,
-      details: details,
-      is_priority: isPriority
-    })
-    .select()
-    .single();
-  if (error) throw error;
-  return data;
-}
-
-async function getMyTickets() {
-  var user = window.getCurrentUser();
-  if (!user) return [];
-  var { data, error } = await window._supabase
-    .from('support_tickets')
-    .select('*')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false });
-  if (error) { console.error('getMyTickets:', error); return []; }
-  return data || [];
-}
-
-// ---- Releases ----
-
-async function getLatestRelease() {
-  var { data, error } = await window._supabase
-    .from('releases')
-    .select('*')
-    .eq('is_latest', true)
-    .single();
-  if (error) { console.error('getLatestRelease:', error); return null; }
-  return data;
-}
-
-async function getAllReleases() {
-  var { data, error } = await window._supabase
-    .from('releases')
-    .select('*')
-    .order('created_at', { ascending: false });
-  if (error) { console.error('getAllReleases:', error); return []; }
-  return data || [];
-}
-
 // ---- Follows ----
 
 async function toggleFollow(targetType, targetId) {
@@ -384,7 +291,7 @@ async function toggleFollow(targetType, targetId) {
     p_target_id: targetId
   });
   if (error) throw error;
-  return data; // true = now following, false = unfollowed
+  return data; // true = now following
 }
 
 async function getFollowCount(targetType, targetId) {

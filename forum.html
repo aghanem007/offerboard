@@ -3,549 +3,158 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Forum - Pixel Forum</title>
+  <title>Forum — Offerboard</title>
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Instrument+Sans:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
-  <div class="topbar">
-    <div class="container topbar-inner">
-      <div class="status-pill">Pixel-only - No injection - No overlays</div>
-      <div class="auth-links">
-        <button class="auth-trigger" type="button" onclick="toggleDropdown(event)">
-          Existing user? Sign In <span class="caret">&#9662;</span>
-        </button>
-        <a href="signup.html" class="btn small">Sign Up</a>
-        <div class="auth-dropdown" id="authDropdown">
-          <h4>Sign In</h4>
-          <form onsubmit="return false;">
-            <label for="loginEmail">Email Address</label>
-            <input type="email" id="loginEmail" name="email" placeholder="you@email.com" required>
-            <label for="loginPassword">Password</label>
-            <input type="password" id="loginPassword" name="password" placeholder="Password" required>
-            <div class="remember-row">
-              <input type="checkbox" id="rememberMe" name="remember">
-              <label for="rememberMe" style="margin-bottom: 0;">Remember me</label>
-            </div>
-            <button type="submit" class="signin-btn">Sign In</button>
-            <a href="recovery.html" class="forgot-link">Forgot your password?</a>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
+<body data-page="forum">
+  <div id="chromeTop"></div>
 
-  <header class="nav">
-    <div class="container nav-inner">
-      <div class="brand">
-        <a class="brand-link" href="index.html">
-          <div class="logo-tile">
-            <img src="assets/logo_no_bg_best.png" alt="Pixel logo" class="logo-img">
-          </div>
-          <div>
-            <div class="brand-name">Pixel</div>
-            <div class="brand-sub">Forum</div>
-          </div>
-        </a>
-      </div>
-      <nav class="nav-links">
-        <a href="index.html">Browse</a>
-        <a href="downloads.html">Download</a>
-        <a href="store.html">Store</a>
-        <a href="guides.html">Guides</a>
-        <a href="support.html">Support</a>
-        <a href="store.html" class="accent">Upgrade to VIP</a>
-      </nav>
-      <div class="search">
-        <input type="search" placeholder="Search...">
-        <button aria-label="Search"><span>&#128269;</span></button>
-      </div>
-    </div>
-  </header>
-
-  <!-- Ticker Bar -->
-  <section class="faq-strip">
-    <div class="container faq-inner">
-      <span class="faq-label">FREQUENTLY ASKED QUESTIONS</span>
-      <div class="ticker-wrapper">
-        <div class="ticker-content">
-          <span>Can't open the client? Try following our <a href="guides.html">getting started guide</a></span>
-          <span class="ticker-dot">•</span>
-          <span>Still not working? Check <a href="support.html">Support</a> for common fixes</span>
-          <span class="ticker-dot">•</span>
-          <span>Detection issues? Re-calibrate your <a href="guides.html#calibration">ROI and anchors</a></span>
-          <span class="ticker-dot">•</span>
-          <span>Need help? Visit the <a href="forum.html?id=client-support">Client Support</a> forum</span>
-          <span class="ticker-dot">•</span>
-          <span>Always verify staff through <a href="contact.html">forum PMs only</a></span>
-          <span class="ticker-dot">•</span>
-          <span>Can't open the client? Try following our <a href="guides.html">getting started guide</a></span>
-          <span class="ticker-dot">•</span>
-          <span>Still not working? Check <a href="support.html">Support</a> for common fixes</span>
-          <span class="ticker-dot">•</span>
-          <span>Detection issues? Re-calibrate your <a href="guides.html#calibration">ROI and anchors</a></span>
-          <span class="ticker-dot">•</span>
-          <span>Need help? Visit the <a href="forum.html?id=client-support">Client Support</a> forum</span>
-          <span class="ticker-dot">•</span>
-          <span>Always verify staff through <a href="contact.html">forum PMs only</a></span>
-          <span class="ticker-dot">•</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Scam Alert (conditionally shown) -->
-  <section class="alert" id="scamAlert" style="display: none;">
-    <div class="container alert-inner">
-      <strong>Scam Alert:</strong>
-      <span>We do not sell access via Discord. Always verify staff through forum PMs.</span>
-    </div>
-  </section>
-
-  <main class="container main-grid">
+  <main class="container main-grid page-shell">
     <div class="forum">
-      <!-- Breadcrumbs -->
       <div class="content-bar">
-        <div class="content-bar-left" id="breadcrumbs">
-          <a href="index.html">Home</a>
+        <div class="content-bar-left">
+          <a href="index.html">Board</a>
           <span>&#8250;</span>
-          <span id="sectionName">Pixel</span>
+          <span id="sectionName">&hellip;</span>
           <span>&#8250;</span>
-          <span id="categoryName">Loading...</span>
+          <span id="categoryName">Loading</span>
         </div>
         <div class="content-bar-right">
-          <a href="index.html">All Activity</a>
-          <a href="#" onclick="alert('Unread content tracking is not yet available.'); return false;">Unread Content</a>
-          <button class="topic-btn">Start new topic</button>
+          <button class="topic-btn" data-action="new-topic">Start a topic</button>
         </div>
       </div>
 
-      <!-- Category Header -->
-      <section class="forum-page-header" id="forumHeader">
+      <section class="forum-page-header">
         <div class="forum-header-content">
-          <div class="forum-header-icon" id="categoryIcon">&#128226;</div>
+          <div class="forum-header-icon" id="categoryIcon"></div>
           <div class="forum-header-info">
             <h1 id="categoryTitle">Loading...</h1>
-            <p id="categoryDescription">Loading category description...</p>
+            <p id="categoryDescription"></p>
           </div>
         </div>
-        <div class="forum-header-actions">
-          <button class="follow-btn" id="followBtn" onclick="handleFollow()">
-            <span id="followIcon">&#9734;</span> <span id="followText">Follow</span>
-            <span class="follow-count" id="followCount">0</span>
-          </button>
-        </div>
+        <button class="follow-btn" id="followBtn">
+          <span id="followIcon">&#9734;</span> <span id="followText">Follow</span>
+          <span class="follow-count" id="followCount">0</span>
+        </button>
       </section>
 
-      <!-- Subforums (if any) -->
-      <section class="subforum-section" id="subforumsSection" style="display: none;">
-        <header class="section-header">
-          <h2>Subforums</h2>
-        </header>
-        <div class="subforum-list" id="subforumsList">
-          <!-- Populated by JavaScript -->
-        </div>
-      </section>
-
-      <!-- Topics List -->
       <section class="topics-section">
         <header class="topics-header">
           <h2>Topics</h2>
           <div class="sort-dropdown">
-            <label for="sortBy">Sort by:</label>
-            <select id="sortBy" onchange="sortTopics(this.value)">
-              <option value="recent">Recently Updated</option>
+            <label for="sortBy">Sort</label>
+            <select id="sortBy">
+              <option value="recent">Recently active</option>
               <option value="newest">Newest</option>
-              <option value="replies">Most Replies</option>
-              <option value="views">Most Views</option>
+              <option value="replies">Most replies</option>
+              <option value="views">Most views</option>
             </select>
           </div>
         </header>
-        <div class="topic-list" id="topicList">
-          <!-- Populated by JavaScript -->
-        </div>
 
-        <!-- Empty State -->
-        <div class="topics-empty" id="topicsEmpty" style="display: none;">
+        <div class="topic-list" id="topicList"></div>
+
+        <div class="topics-empty" id="topicsEmpty">
           <div class="empty-icon">&#128172;</div>
-          <h3>No topics yet</h3>
-          <p>Be the first to start a discussion in this forum.</p>
-          <button class="btn" onclick="if(window.isLoggedIn && window.isLoggedIn()){if(window.isBanned && window.isBanned()){alert('Your account has been suspended. You cannot create new topics.');}else{openTopicModal();}}else{alert('Please sign in to start a new topic.');}">Start a Topic</button>
+          <h3>No topics yet.</h3>
+          <p>Someone has to go first. Might as well be you.</p>
+          <button class="btn" data-action="new-topic">Start a topic</button>
         </div>
 
-        <!-- Pagination -->
-        <div class="pagination" id="pagination">
-          <button class="page-btn active">1</button>
-        </div>
+        <div class="pagination" id="forumPagination"></div>
       </section>
     </div>
 
-    <!-- Sidebar -->
     <aside class="sidebar">
       <section class="side-card">
-        <div class="side-card-header"><h3>Announcements</h3></div>
+        <div class="side-card-header"><h3>House Rules</h3></div>
         <ul>
-          <li><a href="guides.html" class="arrow-link">Dispute Guide</a></li>
-          <li><a href="guides.html" class="arrow-link">Private Message Verification</a></li>
-          <li><a href="terms.html" class="arrow-link">Forum Rules</a></li>
-          <li><a href="contact.html" class="arrow-link">Staff Application Template</a></li>
+          <li>Real numbers, real stories — no LARPing offers</li>
+          <li>Roast resumes, not people</li>
+          <li>No recruiters, no self-promo spam</li>
+          <li>Anonymize interviewers and NDAs exist</li>
         </ul>
       </section>
 
       <section class="side-card">
-        <div class="side-card-header"><h3>Forum Statistics</h3></div>
-        <div class="forum-stats-list">
-          <div class="stat-row">
-            <span class="stat-label">Topics</span>
-            <span class="stat-value" id="statTopics">0</span>
-          </div>
-          <div class="stat-row">
-            <span class="stat-label">Total Replies</span>
-            <span class="stat-value" id="statReplies">0</span>
-          </div>
-        </div>
-      </section>
-
-      <section class="side-card">
-        <h3>Member Access</h3>
-        <ul>
-          <li>Private Downloads (members only)</li>
-          <li>Premium Support</li>
-          <li>Beta Releases</li>
-        </ul>
-        <a href="store.html" class="btn full">Upgrade Now</a>
-      </section>
-
-      <section class="side-card" id="contributorsCard">
-        <div class="side-card-header"><h3>Popular Contributors</h3></div>
+        <div class="side-card-header"><h3>Top Posters</h3></div>
         <div class="tabs" id="contributorTabs">
           <button class="active" data-period="week">Week</button>
           <button data-period="month">Month</button>
-          <button data-period="year">Year</button>
           <button data-period="all">All Time</button>
         </div>
-        <div id="contributorsList"><p class="muted" style="padding: 10px 0;">Loading...</p></div>
+        <div id="contributorsList"><p class="muted">Loading...</p></div>
+      </section>
+
+      <section class="side-card accent">
+        <h3>Lurking?</h3>
+        <p>Reading is free, but the good stuff happens when you post. Join in.</p>
+        <a href="signup.html" class="btn full">Create an account</a>
       </section>
     </aside>
   </main>
 
-  <!-- Create New Topic Modal -->
+  <!-- New topic composer -->
   <div class="modal" id="newTopicModal" aria-hidden="true">
-    <div class="modal-backdrop" onclick="closeTopicModal()"></div>
-    <div class="modal-card topic-modal" role="dialog" aria-modal="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-card" role="dialog" aria-modal="true">
       <div class="modal-header">
-        <h3>Create New Topic</h3>
-        <button class="modal-close" type="button" aria-label="Close" onclick="closeTopicModal()">&times;</button>
+        <h3>Start a Topic</h3>
+        <button class="modal-close" type="button" aria-label="Close">&times;</button>
       </div>
-      <!-- Scam Alert in Modal -->
-      <div class="modal-alert">
-        <strong>Scam Alert:</strong> There has been an uptick in people impersonating developers over Discord.
-        We do <strong>not</strong> offer discounted access over Discord!
-        <strong>Always</strong> confirm any activity with a private message here on the forums.
-      </div>
-
       <form class="topic-form" id="newTopicForm">
-        <div class="topic-form-tabs">
-          <button type="button" class="topic-tab active" data-tab="content">Content</button>
-          <button type="button" class="topic-tab" data-tab="poll">Poll</button>
+        <div class="form-group">
+          <label for="topicTitle">Title <span class="required">required</span></label>
+          <input type="text" id="topicTitle" name="title" maxlength="200" placeholder="Be specific — “Meta E3 phone screen, choked on graphs” beats “help”" required>
         </div>
 
-        <div class="topic-form-body" id="tabContent">
-          <!-- Title -->
-          <div class="form-group">
-            <label for="topicTitle">Title <span class="required">REQUIRED</span></label>
-            <input type="text" id="topicTitle" name="title" placeholder="Enter your topic title..." required>
+        <div class="form-group">
+          <label>Content <span class="required">required</span></label>
+          <div class="editor-toolbar">
+            <button type="button" title="Bold" data-format="bold"><strong>B</strong></button>
+            <button type="button" title="Italic" data-format="italic"><em>I</em></button>
+            <button type="button" title="Strikethrough" data-format="strike"><s>S</s></button>
+            <span class="toolbar-divider"></span>
+            <button type="button" title="Inline code" data-format="code">&lt;/&gt;</button>
+            <button type="button" title="Code block" data-format="codeblock">{ }</button>
+            <button type="button" title="Link" data-format="link">&#128279;</button>
+            <button type="button" title="Quote" data-format="quote">&#10078;</button>
+            <span class="toolbar-divider"></span>
+            <button type="button" title="Bullet list" data-format="ul">&bull; list</button>
+            <button type="button" title="Numbered list" data-format="ol">1. list</button>
           </div>
-
-          <!-- Tags -->
-          <div class="form-group">
-            <button type="button" class="tag-btn" onclick="alert('Tag selection coming soon.')">
-              <span>&#127991;</span> Add Tags...
-            </button>
-          </div>
-
-          <!-- Content Editor -->
-          <div class="form-group">
-            <label>Content <span class="required">REQUIRED</span></label>
-            <div class="editor-toolbar">
-              <button type="button" title="Bold" onclick="formatText('bold')"><strong>B</strong></button>
-              <button type="button" title="Italic" onclick="formatText('italic')"><em>I</em></button>
-              <button type="button" title="Underline" onclick="formatText('underline')"><u>U</u></button>
-              <button type="button" title="Strikethrough" onclick="formatText('strikethrough')"><s>S</s></button>
-              <span class="toolbar-divider"></span>
-              <button type="button" title="Link" onclick="formatText('link')">&#128279;</button>
-              <button type="button" title="Quote" onclick="formatText('quote')">&#10078;</button>
-              <button type="button" title="Code" onclick="formatText('code')">&lt;/&gt;</button>
-              <span class="toolbar-divider"></span>
-              <button type="button" title="Bullet List" onclick="formatText('ul')">&#8226; List</button>
-              <button type="button" title="Numbered List" onclick="formatText('ol')">1. List</button>
-              <span class="toolbar-divider"></span>
-              <button type="button" title="Align Left" onclick="formatText('left')">&#8676;</button>
-              <button type="button" title="Align Center" onclick="formatText('center')">&#8596;</button>
-              <button type="button" title="Align Right" onclick="formatText('right')">&#8677;</button>
-            </div>
-            <textarea id="topicContent" name="content" placeholder="Write your topic content here..." rows="10" required></textarea>
-          </div>
-
-          <!-- File Attachment -->
-          <div class="form-group">
-            <div class="file-upload-area">
-              <span class="file-icon">&#128206;</span>
-              <span>Drag files here to attach, or <label for="topicFiles" class="file-link">choose files...</label></span>
-              <input type="file" id="topicFiles" name="files" multiple hidden>
-              <span class="file-limit">Max total size: 2 MB</span>
-            </div>
-          </div>
-
-          <!-- Follow Topic -->
-          <div class="form-group">
-            <label class="toggle-label">
-              <input type="checkbox" id="followTopic" name="follow" checked>
-              <span class="toggle-switch"></span>
-              <span>Follow topic</span>
-            </label>
-          </div>
+          <textarea id="topicContent" name="content" rows="10" placeholder="What happened? Numbers, rounds, timelines — details make it useful." required></textarea>
         </div>
 
-        <div class="topic-form-body" id="tabPoll" style="display: none;">
-          <div class="form-group">
-            <p class="muted">Poll creation will be available in a future update.</p>
-          </div>
-        </div>
+        <p class="form-error" id="topicFormError" hidden></p>
 
         <div class="topic-form-footer">
-          <button type="button" class="btn ghost" onclick="closeTopicModal()">Cancel</button>
-          <button type="submit" class="btn">Submit Topic</button>
+          <span class="composer-hint">markdown supported</span>
+          <button type="button" class="btn ghost modal-close">Cancel</button>
+          <button type="submit" class="btn">Post Topic</button>
         </div>
       </form>
     </div>
   </div>
 
-  <footer class="footer">
-    <div class="container footer-inner">
-      <span>Pixel Forum</span>
-      <div>
-        <a href="index.html">Home</a>
-        <a href="terms.html">Terms</a>
-        <a href="privacy.html">Privacy</a>
-        <a href="refund.html">Refund Policy</a>
-        <a href="contact.html">Contact</a>
-      </div>
-    </div>
-  </footer>
+  <div id="chromeBottom"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/render.js"></script>
   <script src="js/forum-api.js"></script>
   <script src="js/main.js"></script>
+  <script src="js/widgets.js"></script>
   <script src="js/forum.js"></script>
   <script>
-    // Dropdown toggle
-    function toggleDropdown(e) {
-      if (e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-      var dropdown = document.getElementById('authDropdown');
-      dropdown.classList.toggle('open');
-    }
-
-    document.addEventListener('click', function(event) {
-      var dropdown = document.getElementById('authDropdown');
-      var trigger = document.querySelector('.auth-trigger');
-      if (dropdown && trigger && !dropdown.contains(event.target) && !trigger.contains(event.target)) {
-        dropdown.classList.remove('open');
-      }
+    window.onAuthReady(function () {
+      initContributorsWidget();
     });
-
-    // Contributor tab switching with data reload
-    document.querySelectorAll('#contributorTabs button').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        this.parentElement.querySelectorAll('button').forEach(function(b) {
-          b.classList.remove('active');
-        });
-        this.classList.add('active');
-        var period = this.getAttribute('data-period');
-        loadForumContributors(period);
-      });
-    });
-
-    function loadForumContributors(period) {
-      getTopContributors(period, 5).then(function(contributors) {
-        var el = document.getElementById('contributorsList');
-        if (!el) return;
-        if (!contributors || contributors.length === 0) {
-          el.innerHTML = '<p class="muted" style="padding: 10px 0;">No contributors yet</p>';
-          return;
-        }
-        var html = '';
-        contributors.forEach(function(c) {
-          html += '<div class="contributor-item">';
-          html += '<div class="avatar avatar-sm avatar-' + (c.avatar_color || 'blue') + '">' + (c.avatar_letter || '?') + '</div>';
-          html += '<span class="contributor-name">' + roleUsername(c.username, c.role) + '</span>';
-          html += '<span class="contributor-rep"><span class="dot"></span> ' + (c.post_total || 0) + ' posts</span>';
-          html += '</div>';
-        });
-        el.innerHTML = html;
-      });
-    }
-
-    // Load contributors on page ready
-    window.onAuthReady(function() {
-      loadForumContributors('week');
-
-      // Load follow state for this category
-      var params = new URLSearchParams(window.location.search);
-      var catId = params.get('id');
-      if (catId) {
-        getFollowCount('category', catId).then(function(count) {
-          var el = document.getElementById('followCount');
-          if (el) el.textContent = count;
-        });
-        if (window.isLoggedIn && window.isLoggedIn()) {
-          isFollowing('category', catId).then(function(following) {
-            if (following) {
-              var icon = document.getElementById('followIcon');
-              var text = document.getElementById('followText');
-              if (icon) icon.innerHTML = '&#9733;';
-              if (text) text.textContent = 'Following';
-            }
-          });
-        }
-      }
-    });
-
-    // Handle follow button
-    async function handleFollow() {
-      if (!window.isLoggedIn || !window.isLoggedIn()) {
-        alert('Please sign in to follow this forum.');
-        return;
-      }
-      var params = new URLSearchParams(window.location.search);
-      var catId = params.get('id');
-      if (!catId) return;
-
-      try {
-        var nowFollowing = await toggleFollow('category', catId);
-        var icon = document.getElementById('followIcon');
-        var text = document.getElementById('followText');
-        if (nowFollowing) {
-          if (icon) icon.innerHTML = '&#9733;';
-          if (text) text.textContent = 'Following';
-        } else {
-          if (icon) icon.innerHTML = '&#9734;';
-          if (text) text.textContent = 'Follow';
-        }
-        var count = await getFollowCount('category', catId);
-        var countEl = document.getElementById('followCount');
-        if (countEl) countEl.textContent = count;
-      } catch (err) {
-        alert('Failed to update follow: ' + err.message);
-      }
-    }
-
-    // Topic Modal Functions
-    function openTopicModal() {
-      var modal = document.getElementById('newTopicModal');
-      if (modal) {
-        modal.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden';
-      }
-    }
-
-    function closeTopicModal() {
-      var modal = document.getElementById('newTopicModal');
-      if (modal) {
-        modal.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = '';
-      }
-    }
-
-    // Tab switching
-    document.querySelectorAll('.topic-tab').forEach(function(tab) {
-      tab.addEventListener('click', function() {
-        document.querySelectorAll('.topic-tab').forEach(function(t) {
-          t.classList.remove('active');
-        });
-        this.classList.add('active');
-
-        var tabName = this.getAttribute('data-tab');
-        document.getElementById('tabContent').style.display = tabName === 'content' ? 'block' : 'none';
-        document.getElementById('tabPoll').style.display = tabName === 'poll' ? 'block' : 'none';
-      });
-    });
-
-    // Form submission — create topic in Supabase
-    document.getElementById('newTopicForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      var title = document.getElementById('topicTitle').value.trim();
-      var content = document.getElementById('topicContent').value.trim();
-      var params = new URLSearchParams(window.location.search);
-      var categoryId = params.get('id');
-
-      if (!title || !content) return;
-
-      var submitBtn = this.querySelector('button[type="submit"]');
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Submitting...';
-
-      try {
-        // Wrap plain text in <p> tags if no HTML present
-        var htmlContent = content;
-        if (htmlContent.indexOf('<') === -1) {
-          htmlContent = '<p>' + htmlContent.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>') + '</p>';
-        }
-        var topic = await createTopic(categoryId, title, htmlContent);
-        closeTopicModal();
-        document.getElementById('newTopicForm').reset();
-        // Redirect to the new topic
-        window.location.href = 'topic.html?id=' + topic.id;
-      } catch (err) {
-        alert('Failed to create topic: ' + err.message);
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Submit Topic';
-      }
-    });
-
-    // Text formatting (simplified - just inserts markers)
-    function formatText(format) {
-      var textarea = document.getElementById('topicContent');
-      var start = textarea.selectionStart;
-      var end = textarea.selectionEnd;
-      var text = textarea.value;
-      var selected = text.substring(start, end);
-
-      var markers = {
-        'bold': ['**', '**'],
-        'italic': ['*', '*'],
-        'underline': ['__', '__'],
-        'strikethrough': ['~~', '~~'],
-        'link': ['[', '](url)'],
-        'quote': ['\n> ', ''],
-        'code': ['`', '`'],
-        'ul': ['\n- ', ''],
-        'ol': ['\n1. ', '']
-      };
-
-      if (markers[format]) {
-        var before = markers[format][0];
-        var after = markers[format][1];
-        textarea.value = text.substring(0, start) + before + selected + after + text.substring(end);
-        textarea.focus();
-        textarea.selectionStart = start + before.length;
-        textarea.selectionEnd = start + before.length + selected.length;
-      }
-    }
-
-    // Close modal on escape
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-        closeTopicModal();
-      }
-    });
-
   </script>
 </body>
 </html>

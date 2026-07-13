@@ -1,26 +1,30 @@
 /**
- * Supabase Client Configuration & Auth State
+ * Supabase client init and auth state.
+ *
+ * The publishable key is safe to ship — it only grants what row-level
+ * security allows. The secret key never appears in this repo; it lives
+ * in scripts/seed/.env for local seeding only.
+ *
+ * Everything else waits on onAuthReady() so the UI renders exactly once
+ * with the correct session state (no signed-out flash).
  */
-(function() {
+(function () {
   'use strict';
 
+  // TODO(offerboard): replace with the new project URL + publishable key
   var SUPABASE_URL = 'https://tppdhakosebdgfiwqzur.supabase.co';
-  var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwcGRoYWtvc2ViZGdmaXdxenVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk2NTU5OTUsImV4cCI6MjA4NTIzMTk5NX0.vHBdQqfO29K-WXxbUg3-eLloAUc1vVk5o9oGytRfAY8';
+  var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwcGRoYWtvc2ViZGdmaXdxenVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk2NTU5OTUsImV4cCI6MjA4NTIzMTk5NX0.vHBdQqfO29K-WXxbUg3-eLloAUc1vVk5o9oGytRfAY8';
 
-  var _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  var _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   var _currentUser = null;
   var _currentProfile = null;
   var _authReadyCallbacks = [];
   var _authReady = false;
 
-  // Expose the Supabase client globally
   window._supabase = _supabase;
 
-  /**
-   * Register a callback to fire once auth state is known.
-   * If auth is already resolved, fires immediately.
-   */
-  window.onAuthReady = function(cb) {
+  /** Runs cb once the session state is known (immediately if it already is). */
+  window.onAuthReady = function (cb) {
     if (_authReady) {
       cb(_currentUser, _currentProfile);
     } else {
@@ -28,81 +32,77 @@
     }
   };
 
-  window.getCurrentUser = function() { return _currentUser; };
-  window.getCurrentProfile = function() { return _currentProfile; };
+  window.getCurrentUser = function () { return _currentUser; };
+  window.getCurrentProfile = function () { return _currentProfile; };
 
-  window.getCurrentRole = function() {
+  window.getCurrentRole = function () {
     return (_currentProfile && _currentProfile.role) ? _currentProfile.role : 'guest';
   };
 
-  window.hasRole = function(minRole) {
-    var hierarchy = { guest: 0, member: 1, vip: 2, moderator: 3, admin: 4 };
+  window.hasRole = function (minRole) {
+    var hierarchy = { guest: 0, member: 1, moderator: 2, admin: 3 };
     var current = hierarchy[window.getCurrentRole()] || 0;
     var required = hierarchy[minRole] || 0;
     return current >= required;
   };
 
-  window.isBanned = function() {
+  window.isBanned = function () {
     return !!(_currentProfile && _currentProfile.banned);
   };
 
-  function _fireAuthReady() {
+  function fireAuthReady() {
     _authReady = true;
-    _authReadyCallbacks.forEach(function(cb) {
-      try { cb(_currentUser, _currentProfile); } catch(e) { console.error(e); }
+    _authReadyCallbacks.forEach(function (cb) {
+      try { cb(_currentUser, _currentProfile); } catch (e) { console.error(e); }
     });
     _authReadyCallbacks = [];
   }
 
-  async function _loadProfile(userId) {
+  async function loadProfile(userId) {
     var { data, error } = await _supabase
       .from('profiles')
       .select('*')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle();
     if (error) {
-      console.error('Failed to load profile:', error);
+      console.error('loadProfile:', error);
       return null;
     }
     return data;
   }
 
-  async function initSupabaseAuth() {
-    // Register auth listener
-    _supabase.auth.onAuthStateChange(async function(event, session) {
+  function initAuth() {
+    _supabase.auth.onAuthStateChange(async function (event, session) {
       if (event === 'INITIAL_SESSION') {
         if (session && session.user) {
           _currentUser = session.user;
-          _currentProfile = await _loadProfile(session.user.id);
-          // Update last_seen for online tracking (await so getOnlineUsers sees it)
-          if (typeof updateLastSeen === 'function') { try { await updateLastSeen(); } catch(e) {} }
+          _currentProfile = await loadProfile(session.user.id);
+          // Await so the online widgets on this page load see it
+          if (typeof updateLastSeen === 'function') {
+            try { await updateLastSeen(); } catch (e) { /* non-fatal */ }
+          }
         }
-        if (!_authReady) _fireAuthReady();
+        if (!_authReady) fireAuthReady();
         return;
       }
 
       if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
         if (session && session.user) {
           _currentUser = session.user;
-          _currentProfile = await _loadProfile(session.user.id);
+          _currentProfile = await loadProfile(session.user.id);
         }
-        if (typeof window.updateAuthUI === 'function') {
-          window.updateAuthUI();
-        }
+        if (typeof window.updateAuthUI === 'function') window.updateAuthUI();
       } else if (event === 'SIGNED_OUT') {
         _currentUser = null;
         _currentProfile = null;
-        if (typeof window.updateAuthUI === 'function') {
-          window.updateAuthUI();
-        }
+        if (typeof window.updateAuthUI === 'function') window.updateAuthUI();
       }
     });
   }
 
-  // Initialize on DOM ready
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initSupabaseAuth);
+    document.addEventListener('DOMContentLoaded', initAuth);
   } else {
-    initSupabaseAuth();
+    initAuth();
   }
 })();
