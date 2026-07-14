@@ -120,6 +120,7 @@ npm run seed            # idempotent: wipes and rebuilds its own data
 - **goredis** — a Redis clone in Go, built from scratch, then wired in as Offerboard's caching layer behind `forum-api.js`. That's phase two of this project, and the reason the data layer is a single seam.
 - Custom SMTP (branded auth emails) and GitHub OAuth.
 - Notifications for followed topics.
+- A server-enforced guest teaser: replies past the first come out of the database truncated for anonymous readers (a `CASE` on the auth role inside the view), with a blur-and-join card on top. Deliberately not shipped yet — reading stays fully open until there's real traffic worth converting.
 
 ## License
 
