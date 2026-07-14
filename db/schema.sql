@@ -984,6 +984,12 @@ GRANT INSERT, DELETE ON public.follows     TO authenticated;
 
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO anon, authenticated;
 
+-- The service role (secret key) bypasses RLS but still needs table
+-- privileges; the seed script and any future backend run as this role.
+GRANT USAGE ON SCHEMA public TO service_role;
+GRANT ALL ON ALL TABLES IN SCHEMA public TO service_role;
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO service_role;
+
 -- ------------------------------------------------------------
 -- 9. Seed: sections and categories
 -- ------------------------------------------------------------
