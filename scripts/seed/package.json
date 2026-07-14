@@ -1,0 +1,13 @@
+{
+  "name": "offerboard-seed",
+  "private": true,
+  "type": "module",
+  "description": "Wipes and repopulates the Offerboard database with realistic community content.",
+  "scripts": {
+    "seed": "node seed.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.0",
+    "dotenv": "^16.4.5"
+  }
+}
