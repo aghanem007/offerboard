@@ -96,6 +96,10 @@ body {
   color: var(--ink);
   background-color: var(--paper);
   border-top: 5px solid var(--green);
+  /* the scrolling ticker's transform can extend the document's scroll
+     region; clip it here. 'clip' (not 'hidden') so it doesn't create a
+     scroll container that would break the sticky nav. */
+  overflow-x: clip;
 }
 
 /* Paper grain as a fixed, composited overlay — painted once, so it
@@ -526,7 +530,7 @@ input, textarea, select { font-family: inherit; font-size: inherit; color: var(-
   white-space: nowrap;
   flex-shrink: 0;
 }
-.ticker-wrapper { overflow: hidden; flex: 1; }
+.ticker-wrapper { overflow: hidden; flex: 1; min-width: 0; }
 .ticker-content {
   display: inline-flex;
   align-items: center;

@@ -234,12 +234,6 @@ async function updateLastSeen() {
   if (error) console.error('updateLastSeen:', error);
 }
 
-async function getPreviouslyActiveUsers() {
-  var { data, error } = await window._supabase.rpc('get_previously_active_users');
-  if (error) { console.error('getPreviouslyActiveUsers:', error); return []; }
-  return data || [];
-}
-
 // ---- Community widgets ----
 
 async function getTopContributors(period, limit) {

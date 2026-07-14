@@ -70,7 +70,7 @@
       if (!members.length) {
         el.innerHTML = '<span class="muted">' +
           (guests > 0
-            ? guests + (guests === 1 ? ' guest is' : ' guests are') + ' browsing. Sign in to be seen.'
+            ? guests + (guests === 1 ? ' guest is' : ' guests are') + ' browsing.'
             : 'Nobody around right now. The grind never sleeps, but apparently people do.') +
           '</span>';
       } else {
@@ -81,7 +81,7 @@
     }
   }
 
-  // Keeps "Active Today" honest while a member has the site open
+  // Keeps last_seen fresh while a member has the site open
   function startHeartbeat() {
     if (typeof updateLastSeen !== 'function') return;
     setInterval(function () {

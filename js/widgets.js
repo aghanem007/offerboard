@@ -62,22 +62,3 @@ function initRecentTopicsWidget() {
   });
 }
 
-/**
- * "Active Today" (last-seen based). The live "Who's Online" strip is
- * rendered by presence.js from the realtime channel instead.
- */
-function initOnlineWidgets() {
-  var prevEl = document.getElementById('previouslyActive');
-
-  if (prevEl) {
-    getPreviouslyActiveUsers().then(function (users) {
-      if (!users || users.length === 0) {
-        prevEl.innerHTML = '<span class="muted">No activity in the last 24 hours.</span>';
-        return;
-      }
-      prevEl.innerHTML = users.map(function (u) {
-        return roleUsername(u.username, u.role);
-      }).join('<span class="sep">·</span>');
-    });
-  }
-}
