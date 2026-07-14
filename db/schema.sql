@@ -55,15 +55,16 @@ CREATE TABLE IF NOT EXISTS public.topics (
   category_id   TEXT NOT NULL REFERENCES public.categories(id),
   title         TEXT NOT NULL CHECK (char_length(title) BETWEEN 1 AND 200),
   content       TEXT NOT NULL CHECK (char_length(content) BETWEEN 1 AND 50000),
-  author_id     UUID NOT NULL REFERENCES auth.users(id),
+  -- SET NULL: content survives account deletion, author shows as "Unknown"
+  author_id     UUID REFERENCES auth.users(id) ON DELETE SET NULL,
   pinned        BOOLEAN NOT NULL DEFAULT false,
   locked        BOOLEAN NOT NULL DEFAULT false,
   views         INTEGER NOT NULL DEFAULT 0,
   reply_count   INTEGER NOT NULL DEFAULT 0,
   last_reply_at TIMESTAMPTZ,
-  last_reply_by UUID REFERENCES auth.users(id),
+  last_reply_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
   deleted_at    TIMESTAMPTZ,
-  deleted_by    UUID REFERENCES auth.users(id),
+  deleted_by    UUID REFERENCES auth.users(id) ON DELETE SET NULL,
   created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -72,18 +73,20 @@ CREATE TABLE IF NOT EXISTS public.replies (
   id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   topic_id   UUID NOT NULL REFERENCES public.topics(id) ON DELETE CASCADE,
   content    TEXT NOT NULL CHECK (char_length(content) BETWEEN 1 AND 50000),
-  author_id  UUID NOT NULL REFERENCES auth.users(id),
+  author_id  UUID REFERENCES auth.users(id) ON DELETE SET NULL,
   deleted_at TIMESTAMPTZ,
-  deleted_by UUID REFERENCES auth.users(id),
+  deleted_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 CREATE TABLE IF NOT EXISTS public.warnings (
   id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id    UUID NOT NULL REFERENCES auth.users(id),
+  -- warnings about a deleted user go with them; a departed mod's
+  -- issued warnings stay for the audit trail
+  user_id    UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   reason     TEXT NOT NULL,
-  warned_by  UUID NOT NULL REFERENCES auth.users(id),
+  warned_by  UUID REFERENCES auth.users(id) ON DELETE SET NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -92,7 +95,7 @@ CREATE TABLE IF NOT EXISTS public.mod_actions (
   action_type TEXT NOT NULL,
   target_id   TEXT NOT NULL,
   target_type TEXT NOT NULL CHECK (target_type IN ('topic', 'reply', 'user')),
-  mod_id      UUID NOT NULL REFERENCES auth.users(id),
+  mod_id      UUID REFERENCES auth.users(id) ON DELETE SET NULL,
   reason      TEXT,
   created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
