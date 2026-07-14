@@ -74,23 +74,12 @@ function initStatsWidget() {
   });
 }
 
+/**
+ * "Active Today" (last-seen based). The live "Who's Online" strip is
+ * rendered by presence.js from the realtime channel instead.
+ */
 function initOnlineWidgets() {
-  var onlineEl = document.getElementById('onlineUsers');
   var prevEl = document.getElementById('previouslyActive');
-
-  if (onlineEl) {
-    getOnlineUsers().then(function (users) {
-      var countEl = document.getElementById('onlineCount');
-      if (countEl) countEl.textContent = users.length + ' online';
-      if (!users || users.length === 0) {
-        onlineEl.innerHTML = '<span class="muted">Nobody around right now. The grind never sleeps, but apparently people do.</span>';
-        return;
-      }
-      onlineEl.innerHTML = users.map(function (u) {
-        return roleUsername(u.username, u.role);
-      }).join('<span class="sep">·</span>');
-    });
-  }
 
   if (prevEl) {
     getPreviouslyActiveUsers().then(function (users) {

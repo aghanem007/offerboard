@@ -554,6 +554,15 @@ input, textarea, select { font-family: inherit; font-size: inherit; color: var(-
   border: 1px solid var(--line);
   border-radius: 10px;
 }
+/* each category gets its own tint, cycling the avatar palette */
+.forum-icon.tint-0 { background: #dcecdd; }
+.forum-icon.tint-1 { background: #f7dcd2; }
+.forum-icon.tint-2 { background: #dbe6f7; }
+.forum-icon.tint-3 { background: #fae5cd; }
+.forum-icon.tint-4 { background: #f8eec9; }
+.forum-icon.tint-5 { background: #e8dff2; }
+.forum-icon.tint-6 { background: #d7ebe7; }
+.forum-icon.tint-7 { background: #f8dde7; }
 .forum-info h3 { font-size: 1.02rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
 .forum-info p { color: var(--ink-faint); font-size: 0.86rem; margin-top: 2px; }
 .forum-stats { text-align: center; }

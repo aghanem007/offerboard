@@ -152,6 +152,7 @@
   <script src="js/render.js"></script>
   <script src="js/forum-api.js"></script>
   <script src="js/main.js"></script>
+  <script src="js/presence.js"></script>
   <script src="js/widgets.js"></script>
   <script>
     function renderForumSections(categories) {
@@ -172,6 +173,7 @@
         bySection[cat.section_id].categories.push(cat);
       });
 
+      var catIndex = 0;
       var html = sections.map(function (sec, i) {
         var rows = sec.categories.map(function (cat) {
           var latest;
@@ -189,7 +191,7 @@
             ? ' <span class="category-badge" title="Staff only">&#128737;</span>' : '';
 
           return '<a href="forum.html?id=' + encodeURIComponent(cat.id) + '" class="forum-row">' +
-            '<div class="forum-icon">' + cat.icon + '</div>' +
+            '<div class="forum-icon tint-' + (catIndex++ % 8) + '">' + cat.icon + '</div>' +
             '<div class="forum-info">' +
               '<h3>' + escapeHTML(cat.name) + staffBadge + '</h3>' +
               '<p>' + escapeHTML(cat.description) + '</p>' +
@@ -262,6 +264,17 @@
     }
 
     window.onAuthReady(async function () {
+      // Returning members don't need the sales pitch
+      if (window.isLoggedIn && window.isLoggedIn()) {
+        var joinBtn = document.querySelector('.hero-actions .btn');
+        if (joinBtn) {
+          joinBtn.textContent = 'Start a topic';
+          joinBtn.href = 'forum.html?id=general';
+        }
+        var joinCard = document.querySelector('.side-card.accent');
+        if (joinCard) joinCard.style.display = 'none';
+      }
+
       var params = new URLSearchParams(window.location.search);
       var query = params.get('search');
 

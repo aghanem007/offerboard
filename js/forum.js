@@ -405,7 +405,7 @@ function createPostHTML(post, isOriginal) {
       '<div class="post-sidebar">' +
         avatarHTML(post.avatar, post.color, 'lg') +
         '<div class="post-author">' + roleUsername(post.author, post.role) + '</div>' +
-        roleBadge(post.role) +
+        (post.role === 'moderator' || post.role === 'admin' ? roleBadge(post.role) : '') +
         '<div class="post-author-meta">' +
           '<span>Joined ' + escapeHTML(formatJoinDate(post.joinDate)) + '</span>' +
           '<span class="mono">' + formatNumber(post.posts) + ' posts</span>' +
