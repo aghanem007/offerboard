@@ -252,18 +252,13 @@ async function getTopContributors(period, limit) {
 }
 
 async function getForumStatistics() {
-  var results = await Promise.all([
-    window._supabase.from('topics').select('id', { count: 'exact', head: true }).is('deleted_at', null),
-    window._supabase.from('replies').select('id', { count: 'exact', head: true }).is('deleted_at', null),
-    window._supabase.from('profiles').select('user_id', { count: 'exact', head: true })
-  ]);
-  var topics = results[0].count || 0;
-  var replies = results[1].count || 0;
-  return {
-    topics: topics,
-    posts: topics + replies,
-    members: results[2].count || 0
-  };
+  var { data, error } = await window._supabase.rpc('get_board_stats');
+  if (error || !data || !data.length) {
+    if (error) console.error('getForumStatistics:', error);
+    return { topics: 0, posts: 0, members: 0 };
+  }
+  var row = data[0];
+  return { topics: row.topics, posts: row.posts, members: row.members };
 }
 
 // ---- Search ----

@@ -10,9 +10,18 @@
 
   var HEARTBEAT_MS = 3 * 60 * 1000;
 
+  // Presence isn't critical-path, so let first paint and the board
+  // render settle before opening the realtime websocket.
   window.onAuthReady(function (user, profile) {
-    joinPresence(user, profile);
-    if (user) startHeartbeat();
+    var start = function () {
+      joinPresence(user, profile);
+      if (user) startHeartbeat();
+    };
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(start, { timeout: 2000 });
+    } else {
+      setTimeout(start, 600);
+    }
   });
 
   function joinPresence(user, profile) {

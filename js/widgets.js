@@ -62,18 +62,6 @@ function initRecentTopicsWidget() {
   });
 }
 
-function initStatsWidget() {
-  var el = document.getElementById('boardStats');
-  if (!el) return;
-
-  getForumStatistics().then(function (stats) {
-    el.innerHTML =
-      '<div class="stat-row"><span class="stat-label">Topics</span><span class="stat-value mono">' + formatNumber(stats.topics) + '</span></div>' +
-      '<div class="stat-row"><span class="stat-label">Posts</span><span class="stat-value mono">' + formatNumber(stats.posts) + '</span></div>' +
-      '<div class="stat-row"><span class="stat-label">Members</span><span class="stat-value mono">' + formatNumber(stats.members) + '</span></div>';
-  });
-}
-
 /**
  * "Active Today" (last-seen based). The live "Who's Online" strip is
  * rendered by presence.js from the realtime channel instead.

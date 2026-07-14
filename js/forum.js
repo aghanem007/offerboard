@@ -25,8 +25,9 @@ async function initForumPage() {
     return;
   }
 
-  await getSections();
-  var category = await getCategory(_forum.categoryId);
+  // sections (for the breadcrumb) and the category are independent
+  var results = await Promise.all([getSections(), getCategory(_forum.categoryId)]);
+  var category = results[1];
 
   // RLS hides staff categories entirely, so non-staff get null here
   if (!category) {
@@ -262,8 +263,8 @@ async function initTopicPage() {
     return;
   }
 
-  await getSections();
-  var topic = await getTopic(_thread.topicId);
+  var startup = await Promise.all([getSections(), getTopic(_thread.topicId)]);
+  var topic = startup[1];
 
   if (!topic || (topic.deleted_at && !(window.hasRole && window.hasRole('moderator')))) {
     showPageError("This topic doesn't exist, was removed, or is out of reach.");

@@ -589,6 +589,19 @@ AS $$
   UPDATE public.topics SET views = views + 1 WHERE id = p_topic_id;
 $$;
 
+-- Board stats in one round-trip instead of three count queries
+CREATE OR REPLACE FUNCTION public.get_board_stats()
+RETURNS TABLE (topics BIGINT, posts BIGINT, members BIGINT)
+LANGUAGE sql STABLE SECURITY DEFINER
+SET search_path = public, pg_temp
+AS $$
+  SELECT
+    (SELECT count(*) FROM public.topics WHERE deleted_at IS NULL),
+    (SELECT count(*) FROM public.topics WHERE deleted_at IS NULL)
+      + (SELECT count(*) FROM public.replies WHERE deleted_at IS NULL),
+    (SELECT count(*) FROM public.profiles);
+$$;
+
 CREATE OR REPLACE FUNCTION public.update_last_seen()
 RETURNS VOID
 LANGUAGE sql SECURITY DEFINER

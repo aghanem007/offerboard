@@ -264,8 +264,40 @@
         '<div class="topic-list">' + rows + '</div></section>';
     }
 
-    window.onAuthReady(async function () {
-      // Returning members don't need the sales pitch
+    function paintStats(stats) {
+      document.getElementById('heroTopics').textContent = formatNumber(stats.topics);
+      document.getElementById('heroPosts').textContent = formatNumber(stats.posts);
+      document.getElementById('heroMembers').textContent = formatNumber(stats.members);
+      var el = document.getElementById('boardStats');
+      if (el) el.innerHTML =
+        '<div class="stat-row"><span class="stat-label">Topics</span><span class="stat-value mono">' + formatNumber(stats.topics) + '</span></div>' +
+        '<div class="stat-row"><span class="stat-label">Posts</span><span class="stat-value mono">' + formatNumber(stats.posts) + '</span></div>' +
+        '<div class="stat-row"><span class="stat-label">Members</span><span class="stat-value mono">' + formatNumber(stats.members) + '</span></div>';
+    }
+
+    // Public content doesn't depend on the session — render it right away
+    // instead of waiting for the auth round-trip.
+    async function renderBoard() {
+      var params = new URLSearchParams(window.location.search);
+      var query = params.get('search');
+
+      if (query) {
+        renderSearchResults(query, await searchForum(query));
+      } else {
+        var statsPromise = getForumStatistics(); // one fetch feeds hero + sidebar
+        renderForumSections(await getCategoriesWithLatest());
+        statsPromise.then(paintStats);
+      }
+
+      initRecentTopicsWidget();
+      initContributorsWidget();
+      initOnlineWidgets();
+    }
+
+    renderBoard();
+
+    // Only the member-vs-guest CTA depends on who's signed in.
+    window.onAuthReady(function () {
       if (window.isLoggedIn && window.isLoggedIn()) {
         var joinBtn = document.querySelector('.hero-actions .btn');
         if (joinBtn) {
@@ -275,28 +307,6 @@
         var joinCard = document.querySelector('.side-card.accent');
         if (joinCard) joinCard.style.display = 'none';
       }
-
-      var params = new URLSearchParams(window.location.search);
-      var query = params.get('search');
-
-      if (query) {
-        var results = await searchForum(query);
-        renderSearchResults(query, results);
-      } else {
-        var categories = await getCategoriesWithLatest();
-        renderForumSections(categories);
-
-        getForumStatistics().then(function (stats) {
-          document.getElementById('heroTopics').textContent = formatNumber(stats.topics);
-          document.getElementById('heroPosts').textContent = formatNumber(stats.posts);
-          document.getElementById('heroMembers').textContent = formatNumber(stats.members);
-        });
-      }
-
-      initRecentTopicsWidget();
-      initStatsWidget();
-      initContributorsWidget();
-      initOnlineWidgets();
     });
   </script>
 </body>
