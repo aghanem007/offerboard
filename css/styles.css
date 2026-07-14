@@ -68,8 +68,13 @@
 
 /* Elements that use dark ink as a SURFACE (not as text) must stay dark
    instead of flipping to cream when the tokens invert. */
-[data-theme="dark"] .topbar { background: #0d0a06; }
+[data-theme="dark"] .topbar { background: #0d0a06; color: var(--ink); }
+[data-theme="dark"] .auth-trigger { color: var(--ink-soft); }
+[data-theme="dark"] .auth-welcome { color: var(--ink); }
 [data-theme="dark"] .auth-links .btn.ghost { color: var(--ink); border-color: rgba(236, 228, 210, 0.25); }
+/* light-token text ON a dark surface — keep it light in dark mode */
+[data-theme="dark"] .side-card.accent h3 { color: var(--ink); }
+[data-theme="dark"] .badge-pinned { color: var(--yellow); }
 [data-theme="dark"] .ticker-label,
 [data-theme="dark"] .search button,
 [data-theme="dark"] .topic-btn,
@@ -875,6 +880,7 @@ input, textarea, select { font-family: inherit; font-size: inherit; color: var(-
   align-items: center;
   gap: 7px;
   background: var(--paper);
+  color: var(--ink); /* buttons default to UA black otherwise — invisible in dark */
   border: 1.5px solid var(--line-ink);
   border-radius: var(--radius);
   padding: 8px 14px;

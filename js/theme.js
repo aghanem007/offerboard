@@ -9,7 +9,10 @@
 
   try {
     var saved = localStorage.getItem(KEY);
-    if (saved === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+    // Saved choice wins; otherwise follow the OS preference on first visit.
+    var dark = saved === 'dark' ||
+      (saved === null && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    if (dark) document.documentElement.setAttribute('data-theme', 'dark');
   } catch (e) { /* private browsing — default to light */ }
 
   window.toggleTheme = function () {
