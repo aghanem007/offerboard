@@ -173,13 +173,12 @@ input, textarea, select { font-family: inherit; font-size: inherit; color: var(-
   min-height: 42px;
   gap: 12px;
 }
-.topbar-tag {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--yellow);
+.topbar-tag,
+.topbar-stat {
+  font-size: 0.8rem;
+  color: rgba(243, 234, 216, 0.55);
 }
+.topbar-stat { font-variant-numeric: tabular-nums; }
 
 .auth-links { display: flex; align-items: center; gap: 10px; position: relative; }
 .auth-links.auth-pending { visibility: hidden; } /* no signed-out flash */

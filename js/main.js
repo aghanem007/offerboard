@@ -10,10 +10,23 @@
   function init() {
     initSignInForm();
     initNavSearch();
+    populateTopbarStat();
 
     if (typeof window.onAuthReady === 'function') {
       window.onAuthReady(updateAuthUI);
     }
+  }
+
+  // The topbar strip shows a live pulse of the board. Non-blocking —
+  // it fills in whenever the (shared, memoized) stats resolve.
+  function populateTopbarStat() {
+    var el = document.getElementById('topbarStat');
+    if (!el || typeof getForumStatistics !== 'function') return;
+    getForumStatistics().then(function (s) {
+      el.textContent = formatNumber(s.topics) + ' topics · ' +
+                       formatNumber(s.posts) + ' posts · ' +
+                       formatNumber(s.members) + ' grinding';
+    }).catch(function () { /* leave it blank on failure */ });
   }
 
   // ---- Topbar auth area ----

@@ -251,14 +251,21 @@ async function getTopContributors(period, limit) {
   return data || [];
 }
 
-async function getForumStatistics() {
-  var { data, error } = await window._supabase.rpc('get_board_stats');
-  if (error || !data || !data.length) {
-    if (error) console.error('getForumStatistics:', error);
-    return { topics: 0, posts: 0, members: 0 };
-  }
-  var row = data[0];
-  return { topics: row.topics, posts: row.posts, members: row.members };
+// Memoized: the hero card, sidebar, and topbar strip all want these
+// numbers, and they don't change within a page view — so it's one request.
+var _statsPromise = null;
+
+function getForumStatistics() {
+  if (_statsPromise) return _statsPromise;
+  _statsPromise = window._supabase.rpc('get_board_stats').then(function (res) {
+    if (res.error || !res.data || !res.data.length) {
+      if (res.error) console.error('getForumStatistics:', res.error);
+      return { topics: 0, posts: 0, members: 0 };
+    }
+    var row = res.data[0];
+    return { topics: row.topics, posts: row.posts, members: row.members };
+  });
+  return _statsPromise;
 }
 
 // ---- Search ----

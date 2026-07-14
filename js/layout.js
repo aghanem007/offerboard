@@ -24,7 +24,7 @@
     return '' +
       '<div class="topbar">' +
         '<div class="container topbar-inner">' +
-          '<span class="topbar-tag">For CS students chasing offer #1</span>' +
+          '<span class="topbar-stat" id="topbarStat" aria-hidden="true"></span>' +
           '<div class="auth-links auth-pending" id="authArea">' +
             '<button class="auth-trigger" type="button" id="authTrigger">Sign In <span class="caret">&#9662;</span></button>' +
             '<a href="signup.html" class="btn small">Join Offerboard</a>' +
