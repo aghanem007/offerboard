@@ -64,8 +64,20 @@
             '<input type="search" placeholder="Search the board..." aria-label="Search">' +
             '<button type="submit" aria-label="Search">&#8981;</button>' +
           '</form>' +
+          ghostButtonHTML() +
         '</div>' +
       '</header>';
+  }
+
+  function ghostButtonHTML() {
+    return '' +
+      '<button class="ghost-btn" type="button" onclick="toggleTheme()" title="ghost mode" aria-label="Toggle dark theme">' +
+        '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">' +
+          '<path d="M12 2a8 8 0 0 0-8 8v11.2l3-2.4 2.5 2.4 2.5-2.4 2.5 2.4 2.5-2.4 3 2.4V10a8 8 0 0 0-8-8z" fill="currentColor"/>' +
+          '<circle cx="9.4" cy="10.2" r="1.4" class="ghost-eye"/>' +
+          '<circle cx="14.6" cy="10.2" r="1.4" class="ghost-eye"/>' +
+        '</svg>' +
+      '</button>';
   }
 
   function footerHTML() {
